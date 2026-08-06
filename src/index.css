@@ -1,0 +1,109 @@
+:root {
+  /* Marca SolarCo */
+  --navy: #004b70;
+  --green: #c6da38;
+  --bluegrey: #6692a8;
+
+  --text: #33414a;
+  --text-muted: #8496a0;
+  --bg: #f4f6f8;
+  --card: #ffffff;
+  --border: #e3e9ed;
+  --warn: #c98a1a;
+  --warn-bg: #fdf5e6;
+
+  font: 15px/1.5 system-ui, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+/* ---- Tela de acesso (Gate) ---- */
+.gate {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #004b70 0%, #06364d 100%);
+  padding: 24px;
+}
+.gate-card {
+  width: 100%;
+  max-width: 380px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px 36px 28px;
+  box-shadow: 0 24px 60px rgba(0, 30, 50, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.gate-logo { height: 64px; margin-bottom: 24px; }
+.gate-title { margin: 0; font-size: 22px; font-weight: 700; color: #004b70; letter-spacing: -0.01em; }
+.gate-sub { margin: 6px 0 18px; font-size: 13px; color: #6692a8; }
+.gate-demo-tag { display: inline-block; margin-bottom: 24px; padding: 4px 12px; border-radius: 999px;
+  background: #fff5e6; color: #b8791a; border: 1px solid #f3d9a8; font-size: 11px; font-weight: 700; letter-spacing: .04em; }
+.gate-label { align-self: flex-start; font-size: 12px; font-weight: 600; color: #45606e; margin-bottom: 6px; }
+.gate-input-wrap { position: relative; width: 100%; }
+.gate-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 44px 12px 14px;
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  border: 1.5px solid #d3dee4;
+  border-radius: 9px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.gate-eye {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #6692a8;
+  cursor: pointer;
+  border-radius: 7px;
+  transition: color 0.15s, background 0.15s;
+}
+.gate-eye:hover { color: #004b70; background: #eef3f6; }
+.gate-input:focus { border-color: #004b70; }
+.gate-input--erro { border-color: #d64545; }
+.gate-erro { align-self: flex-start; margin: 8px 0 0; font-size: 12px; color: #d64545; }
+.gate-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #004b70;
+  background: #c6da38;
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.gate-btn:hover:not(:disabled) { filter: brightness(1.05); }
+.gate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.gate-foot { margin: 22px 0 0; font-size: 11px; color: #9bb0bc; }

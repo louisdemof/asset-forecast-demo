@@ -1,0 +1,13 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+.vercel
+*.log
+
+# local env (never commit keys) — this demo ships no secrets
+.env.local
+.env*.local
+
+# NOTE: public/data/ is intentionally COMMITTED here — it is synthetic demo data.

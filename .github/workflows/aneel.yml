@@ -1,0 +1,34 @@
+name: Atualizar tarifas ANEEL (semanal)
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # toda segunda-feira, 06:00 UTC
+  workflow_dispatch: {}    # permite rodar manualmente pelo GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Puxar tarifas da ANEEL (dados abertos)
+        run: python3 scripts/pull-aneel.py
+
+      - name: Commit se houve reajuste
+        run: |
+          if ! git diff --quiet src/data/aneel-tariffs.json; then
+            git config user.name "aneel-bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add src/data/aneel-tariffs.json
+            git commit -m "chore: atualização semanal das tarifas ANEEL"
+            git push
+            echo "Tarifas atualizadas e publicadas (Vercel faz o deploy)."
+          else
+            echo "Sem reajuste desde a última execução — nada a fazer."
+          fi

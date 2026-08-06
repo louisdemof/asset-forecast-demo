@@ -1,0 +1,34 @@
+Status,Project,DISCO,Capacity (MWp),Capacity (MWac),Original offtaker,Pipeline status,New offtaker expected,Contract term,Take or Pay,Ramp up,Discount,Base de cálculo,Signing date,COD (Conexão com a Distribuidora),Troca de titularidade,Início da Compensação,Riscos
+Quente,Frevo 8,CELPE,1.94,1.5,NEXUS,Negotiation,NOVASOL,Until 2045,1,3 months,0.353,TE+TUSD,2026-06-01,2027-03-02,2026-11-01,2027-01-01,Rede não constrúida. Previsão de entrega em 04/2024. BOS abandonou a obra (nova cotação em andamento)
+Frio,Frevo 10.1,CELPE,1.29,1,NEXUS,Negotiation,MINCO,15 years,1,9 months,0.32,TE+TUSD,2026-08-01,2027-03-02,2027-04-02,2027-06-02,Rede não constrúida. Previsão de entrega em 04/2024. BOS abandonou a obra (nova cotação em andamento)
+Quente,Frevo 10.2,CELPE,1.29,1,NEXUS,Negotiation,NOVASOL,Until 2045,1,3 months,0.349,TE+TUSD,2026-06-01,2027-03-02,2026-11-01,2027-01-01,Rede não constrúida. Previsão de entrega em 04/2024. BOS abandonou a obra (nova cotação em andamento)
+Quente,Rubi,COPEL,3.2,2.5,Without client,Negotiation,NOVASOL,Until 2045,1,3 months,0.347,TE+TUSD,2026-06-01,2026-01-12,2026-09-01,2026-11-01,
+Quente,Aliança,COPEL,6.22,5,Without client,Negotiation,NOVASOL,Until 2045,1,3 months,0.347,TE+TUSD,2026-06-01,2025-11-14,2026-09-01,2026-11-01,
+NEXUS,Planalto 02,COPEL,1.37,1,TELMO,Signed,NEXUS,20 years,0,No,0.28,TE+TUSD,NEXUS,00/01/1900,NEXUS,NEXUS,
+Quente,Aurora,COPEL,3.14,2.5,Without client,Signed,ALPHAEN,10 years,1,24 months,0.35,TE+TUSD,2026-03-30,2025-08-04,2026-04-14,2026-05-01,
+Quente,Litoral 10,COSERN,1.29,1,NEXUS,Signed,DISTRA,10 years,1,8 months,0.34,TE+TUSD,2026-01-21,2025-08-06,2026-03-01,2026-06-01,
+NEXUS,Litoral 12,COSERN,1.29,1,NEXUS,Negotiation,FIT,Until 2045,1,No,0.3,TE+TUSD,2026-08-01,2025-09-18,2026-09-01,2026-11-01,
+Quente,Litoral 15,COSERN,1.28,1,NEXUS,Negotiation,NOVASOL,Until 2045,1,3 months,0.789,TE+TUSD,2026-06-01,2025-09-12,2026-10-01,2026-12-01,
+Quente,Serra Azul 12,EDP SP,2.18,1.75,Without client,Signed,FIT,Until 2045,1,No,0.32,TE+TUSD,2025-10-27,00/01/1900,2025-11-01,2026-01-01,
+NEXUS,Sertão 06,ENEL CE,3.22,2.5,NEXUS,Keep with NEXUS,NEXUS,20 years,0,No,0.305,TE+TUSD,NEXUS,2025-10-31,NEXUS,NEXUS,"27% da receita anual @ 30,5% de desconto"
+Quente,Sertão 07,ENEL CE,3.22,2.5,NEXUS,Negotiation,NOVASOL,15 years,1,9 months,0.32,TE+TUSD,2026-06-01,2026-09-01,2026-07-01,2026-09-01,
+Frio,Sertão 09,ENEL CE,3.19,2.5,NEXUS,Negotiation,MINCO,15 years,1,9 months,0.32,TE+TUSD,2026-08-01,2026-09-01,2026-10-01,2026-12-01,
+Quente,Sertão 15,ENEL CE,1.22,1,NEXUS,Negotiation,NOVASOL,Until 2045,1,3 months,0.35,TE+TUSD,2026-06-01,2025-10-31,2026-09-01,2026-11-01,
+Frio,Sertão 18,ENEL CE,3.19,2.5,NEXUS,Negotiation,NOVASOL,Until 2045,1,3 months,0.448,TE+TUSD,2026-11-01,2027-01-01,2027-05-01,2027-07-01,
+Frio,Sertão 19,ENEL CE,3.3,2.5,NEXUS,Negotiation,NOVASOL,Until 2045,1,3 months,0.453,TE+TUSD,2026-11-01,2027-01-01,2027-05-01,2027-07-01,
+Quente,Sertão 22,ENEL CE,3.19,2.5,NEXUS,Negotiation,TELMO,20,0,No,0.22,Tarifa Compensável,2026-08-01,2025-10-31,2026-09-01,2026-11-01,
+Quente,Buriti,Energisa MS,6.21,5,NEXUS,Signed,OPERON,2 years*,0,No,0.33,TE+TUSD,2025-12-20,00/01/1900,2026-04-01,2026-06-07,"14% da receita anual @ 31,4% de desconto"
+Quente,Ventania I,Energisa MS,0.63,0.5,NEXUS,Signed,MINCO,15 years,1,9 months,0.32,TE+TUSD,2026-04-20,2024-03-13,2026-07-01,2026-09-01,"14% da receita anual @ 31,4% de desconto"
+Quente,Ventania II,Energisa MS,1.13,0.88,NEXUS,Negotiation,MINCO,15 years,1,9 months,0.32,TE+TUSD,2026-08-01,2024-04-24,2026-09-01,2026-11-01,"14% da receita anual @ 31,4% de desconto"
+Quente,Ventania III,Energisa MS,0.81,0.63,NEXUS,Negotiation,AGROVA,5 years,1,No,0.5,TE+TUSD,2026-07-01,2024-02-26,2026-08-01,2026-10-01,"14% da receita anual @ 31,4% de desconto"
+Quente,Ventania IV,Energisa MS,3.76,3,NEXUS,Negotiation,NOVASOL,Until 2045,1,3 months,0.352,TE+TUSD,2026-06-01,2024-03-13,2026-09-01,2026-11-01,"14% da receita anual @ 31,4% de desconto"
+Quente,Quartzo,Energisa MS,6.22,5,NEXUS,Negotiation,NOVASOL,Until 2045,1,3 months,0.352,TE+TUSD,2026-06-01,2024-05-01,2026-09-01,2026-11-01,"14% da receita anual @ 31,4% de desconto"
+NEXUS,Cachoeira,Energisa MS,3.08,2.5,NEXUS,Keep with NEXUS,NEXUS,20 years,0,No,0.312,TE+TUSD,NEXUS,2024-09-19,NEXUS,NEXUS,"14% da receita anual @ 31,4% de desconto"
+Quente,Guará III,Energisa Sul Sudeste,1.64,1.25,Without client,Signed,FIT,Until 2045,1,No,0.32,TE+TUSD,2026-03-09,2024-08-06,2026-05-09,2026-05-09,
+Quente,Jatobá 6,Equatorial Goiás,6.22,5,Without client,Signed,VERTA,20 years,1,12 months,0.294,TE+TUSD,2026-01-16,00/01/1900,2026-02-16,2026-04-16,
+NEXUS,Jatobá 7.5,Equatorial Goiás,1.24,1,Without client,Signed,NEXUS,20 years,0,No,0.3,TE+TUSD,2025-10-15,00/01/1900,NEXUS,NEXUS,
+Quente,Jatobá 7.1,Equatorial Goiás,1.25,1,Without client,Signed,MINCO,15 years,1,9 months,0.32,TE+TUSD,2026-04-20,2025-03-02,2026-06-20,2026-08-20,
+Quente,Jatobá 7.2,Equatorial Goiás,1.24,1,Without client,Signed,ENERVA,10 years,1,5 months,0.32,TE+TUSD,2026-05-10,2025-03-02,2026-06-09,2026-08-10,
+Quente,Jatobá 7.3,Equatorial Goiás,1.24,1,Without client,Negotiation,NOVASOL,Until 2045,1,3 months,0.353,TE+TUSD,2026-06-01,2025-03-02,2026-09-01,2026-11-01,
+Quente,Jatobá 7.4,Equatorial Goiás,1.24,1,Without client,Negotiation,ENERVA,10 years,1,10 months,0.32,TE+TUSD,2026-02-01,2025-03-02,2026-03-01,2026-05-01,
+Frio,Campo Belo,Equatorial Goiás,6.2,5,VERTA,Negotiation,NOVASOL,Until 2045,1,3 months,0.437,TE+TUSD,2026-12-01,2025-03-02,2027-02-01,2027-04-01,
