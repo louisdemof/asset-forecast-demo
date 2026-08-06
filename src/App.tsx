@@ -195,9 +195,6 @@ export default function App() {
         <img className="topband-logo" src={`${import.meta.env.BASE_URL}SolarCo_logo.svg`} alt="SolarCo" />
         <div className="topband-actions">
           <FormulasHelp />
-          <a className="topband-link" href={`${import.meta.env.BASE_URL}apresentacao.html`} target="_blank" rel="noreferrer">📊 Presentation ↗</a>
-          <a className="topband-link" href={`${import.meta.env.BASE_URL}governanca-dados.html`} target="_blank" rel="noreferrer">🗂 Governance ↗</a>
-          <a className="topband-link" href={`${import.meta.env.BASE_URL}Contrato_de_Dados_Governanca.xlsx`}>⤓ Data Contract (xlsx)</a>
           {podeAdmin && (
             <button className={`topband-link${aba === 'admin' ? ' topband-link--on' : ''}`} onClick={() => setAba('admin')}>
               👤 Users & Admin
