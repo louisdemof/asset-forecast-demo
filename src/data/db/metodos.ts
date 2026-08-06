@@ -15,7 +15,7 @@ export async function listMetodos(): Promise<MetodoCliente[]> {
 }
 
 export async function upsertMetodo(cliente: string, patch: Partial<MetodoCliente>): Promise<void> {
-  if (!supabase) throw new Error('Supabase não configurado');
+  if (!supabase) throw new Error('Supabase not configured');
   const { error } = await supabase.from('metodos_cliente').update(patch).eq('cliente', cliente);
   if (error) throw error;
 }
@@ -28,7 +28,7 @@ export async function listDescontos(): Promise<DescontoUsina[]> {
 }
 
 export async function upsertDesconto(usina: string, patch: Partial<DescontoUsina>): Promise<void> {
-  if (!supabase) throw new Error('Supabase não configurado');
+  if (!supabase) throw new Error('Supabase not configured');
   const { error } = await supabase.from('descontos_usina').update(patch).eq('usina', usina);
   if (error) throw error;
 }

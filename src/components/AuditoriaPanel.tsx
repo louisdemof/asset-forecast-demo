@@ -46,11 +46,11 @@ function analisaSerie(meses: { comp: number; cons: number; inj: number; saldo: n
 }
 
 const PROBLEMAS: { key: Problema; label: string; cor: string; desc: string }[] = [
-  { key: 'semRateio', label: 'Sem rateio', cor: 'r', desc: 'Compensa mas rateio declarado = 0% (BV faltando na Base MeterHub) — investigar com a MeterHub.' },
-  { key: 'geradora', label: 'Geradora', cor: 'y', desc: 'A injeção domina — é o medidor da usina, não uma UC consumidora. Fica fora do total.' },
-  { key: 'glitch', label: 'Glitch', cor: 'r', desc: 'Compensado impossível (acima do consumo/injeção e NÃO explicado por recuperação de meses represados) — erro de fatura escaneada.' },
-  { key: 'contingencia', label: 'Contingência', cor: 'y', desc: 'Mês em que a UC consumiu mas não compensou (saldo 0) — fatura não emitida/escaneada. Inclui o mês anterior a uma recuperação.' },
-  { key: 'recuperacao', label: 'Recuperação', cor: 'b', desc: 'Mês com compensação em dobro/triplo que cobre meses anteriores represados — energia real, não é erro. Sinaliza a fatura pendente do mês anterior.' },
+  { key: 'semRateio', label: 'No allocation', cor: 'r', desc: 'Compensates but declared allocation = 0% (BV missing in the MeterHub Base) — investigate with MeterHub.' },
+  { key: 'geradora', label: 'Generator', cor: 'y', desc: 'Injection dominates — it is the plant meter, not a consuming UC. Kept out of the total.' },
+  { key: 'glitch', label: 'Glitch', cor: 'r', desc: 'Impossible compensation (above consumption/injection and NOT explained by recovery of backlogged months) — scanned-invoice error.' },
+  { key: 'contingencia', label: 'Contingency', cor: 'y', desc: 'Month in which the UC consumed but did not compensate (balance 0) — invoice not issued/scanned. Includes the month before a recovery.' },
+  { key: 'recuperacao', label: 'Recovery', cor: 'b', desc: 'Month with double/triple compensation covering earlier backlogged months — real energy, not an error. Flags the pending invoice from the previous month.' },
 ];
 
 export default function AuditoriaPanel({ onAbrir }: { onAbrir?: (usina: string, uc: string) => void }) {
@@ -115,10 +115,10 @@ export default function AuditoriaPanel({ onAbrir }: { onAbrir?: (usina: string, 
   }, [flags, filtro, usinaF, busca]);
 
   const exportCSV = () => {
-    const head = ['UC', 'Usina', 'Distribuidora', 'Rateio %', 'Consumo (ano)', 'Compensado (ano)', 'Injeção (ano)', 'Problemas'];
+    const head = ['UC', 'Plant', 'Utility', 'Allocation %', 'Consumption (year)', 'Compensated (year)', 'Injection (year)', 'Problems'];
     const rows = flags.filter((f) => filtro === 'todos' || f[filtro]).map((f) => [
       f.uc, f.usina, f.dist, (f.rateio * 100).toFixed(2), f.consumo.toFixed(0), f.compensado.toFixed(0), f.injetado.toFixed(0),
-      [f.semRateio && 'sem rateio', f.geradora && 'geradora', f.glitch && 'glitch', f.contingencia && 'contingência', f.recuperacao && 'recuperação'].filter(Boolean).join(' + '),
+      [f.semRateio && 'no allocation', f.geradora && 'generator', f.glitch && 'glitch', f.contingencia && 'contingency', f.recuperacao && 'recovery'].filter(Boolean).join(' + '),
     ]);
     const csv = [head, ...rows].map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(';')).join('\r\n');
     const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
@@ -126,96 +126,96 @@ export default function AuditoriaPanel({ onAbrir }: { onAbrir?: (usina: string, 
     a.href = URL.createObjectURL(blob); a.download = 'auditoria-ucs.csv'; a.click(); URL.revokeObjectURL(a.href);
   };
 
-  if (!dados) return <div className="state">Carregando…</div>;
+  if (!dados) return <div className="state">Loading…</div>;
 
   return (
     <>
       <section className="kpis">
-        <Kpi label="UCs sinalizadas" value={n0(cont.total)} sub="com alguma inconsistência" accent />
-        <Kpi label="Sem rateio" value={n0(cont.semRateio)} sub="compensam, BV faltando" />
-        <Kpi label="Geradoras" value={n0(cont.geradora)} sub="medidor da usina" />
-        <Kpi label="Glitch / contingência" value={`${cont.glitch} / ${cont.contingencia}`} sub="fatura com erro / pendente" />
+        <Kpi label="Flagged UCs" value={n0(cont.total)} sub="with some inconsistency" accent />
+        <Kpi label="No allocation" value={n0(cont.semRateio)} sub="compensate, BV missing" />
+        <Kpi label="Generators" value={n0(cont.geradora)} sub="plant meter" />
+        <Kpi label="Glitch / contingency" value={`${cont.glitch} / ${cont.contingencia}`} sub="invoice with error / pending" />
       </section>
 
       <div className="audit-head">
         <p>
-          Varredura de qualidade das UCs medidas (MeterHub, 12 meses). Clique num tipo para filtrar; exporte a lista para tratar com o time.
-          <button className="ajuda-toggle" onClick={() => setAjuda((v) => !v)}>{ajuda ? '▾ ocultar' : '❔ como funciona'}</button>
+          Quality sweep of the metered UCs (MeterHub, 12 months). Click a type to filter; export the list to work through it with the team.
+          <button className="ajuda-toggle" onClick={() => setAjuda((v) => !v)}>{ajuda ? '▾ hide' : '❔ how it works'}</button>
         </p>
 
         {ajuda && (
           <div className="ajuda-box">
-            <h4>Por que esta auditoria existe</h4>
+            <h4>Why this audit exists</h4>
             <p>
-              O forecast de receita depende de <b>quanto cada usina compensa</b> nas UCs consumidoras. Esse dado vem da <b>MeterHub</b>, que
-              escaneia as faturas das distribuidoras de <b>~6.800 UCs</b>. Em qualquer base desse tamanho há ruído: faturas mal escaneadas,
-              rateio (BV) não cadastrado, o medidor da própria usina misturado com consumidores, faturas que não saíram num mês. Se ninguém
-              varre isso, o erro entra <b>silenciosamente na receita prevista</b>. Esta aba faz a varredura e classifica cada anomalia — para
-              você saber <b>o que investigar, por quê e com quem resolver</b>.
+              The revenue forecast depends on <b>how much each plant compensates</b> in the consuming UCs. That data comes from <b>MeterHub</b>, which
+              scans the utility invoices of <b>~6,800 UCs</b>. In any base this size there is noise: poorly scanned invoices,
+              allocation (BV) not registered, the plant's own meter mixed in with consumers, invoices that did not come out in a given month. If no one
+              sweeps this, the error slips <b>silently into the forecasted revenue</b>. This tab runs the sweep and classifies each anomaly — so
+              you know <b>what to investigate, why, and with whom to resolve it</b>.
             </p>
 
-            <h4>Como cada sinal é calculado</h4>
+            <h4>How each signal is calculated</h4>
             <ul className="ajuda-list">
               <li>
-                <span className="audit-tag r">sem rateio</span>
-                <b>Regra:</b> a UC compensa &gt; 1 MWh/ano mas o rateio declarado é <b>0%</b>.
-                <b>Por quê:</b> energia sendo compensada sem estar amarrada a nenhuma usina no cadastro → risco de atribuição/faturamento errado.
-                <b>Ação:</b> pedir à MeterHub o BV correto daquela UC.
+                <span className="audit-tag r">no allocation</span>
+                <b>Rule:</b> the UC compensates &gt; 1 MWh/year but the declared allocation is <b>0%</b>.
+                <b>Why:</b> energy being compensated without being tied to any plant in the registration → risk of wrong attribution/billing.
+                <b>Action:</b> ask MeterHub for the correct BV of that UC.
               </li>
               <li>
-                <span className="audit-tag y">⚡ geradora</span>
-                <b>Regra:</b> injeção &gt; 5.000 kWh <b>e</b> maior que o consumo.
-                <b>Por quê:</b> é o <b>medidor da usina</b>, não uma UC consumidora — se contada como consumo, infla a compensação e a receita.
-                <b>Ação:</b> nenhuma; a aba já a exclui do total limpo. Serve de conferência.
+                <span className="audit-tag y">⚡ generator</span>
+                <b>Rule:</b> injection &gt; 5,000 kWh <b>and</b> greater than consumption.
+                <b>Why:</b> it is the <b>plant meter</b>, not a consuming UC — if counted as consumption, it inflates compensation and revenue.
+                <b>Action:</b> none; the tab already excludes it from the clean total. Serves as a cross-check.
               </li>
               <li>
                 <span className="audit-tag r">⚠ glitch</span>
-                <b>Regra:</b> um mês compensa &gt; máx(consumo, injeção) × 1,5 <b>e isso não é explicado por recuperação</b> (ver abaixo).
-                <b>Por quê:</b> compensar muito mais do que se consumiu, sem banco para sacar, é fisicamente impossível → erro de OCR na fatura.
-                <b>Ação:</b> pedir à MeterHub reconferir aquele mês contra o PDF; candidato a correção manual.
+                <b>Rule:</b> a month compensates &gt; max(consumption, injection) × 1.5 <b>and this is not explained by recovery</b> (see below).
+                <b>Why:</b> compensating far more than was consumed, with no bank to draw from, is physically impossible → invoice OCR error.
+                <b>Action:</b> ask MeterHub to recheck that month against the PDF; candidate for manual correction.
               </li>
               <li>
-                <span className="audit-tag y">contingência</span>
-                <b>Regra:</b> mês em que a UC <b>consumiu mas compensou 0</b> (saldo 0) — entre meses que compensam, ou logo antes de uma recuperação.
-                <b>Por quê:</b> a fatura daquele mês <b>não foi emitida/escaneada</b> → buraco no histórico.
-                <b>Ação:</b> cobrar a fatura faltante da distribuidora/MeterHub.
+                <span className="audit-tag y">contingency</span>
+                <b>Rule:</b> a month in which the UC <b>consumed but compensated 0</b> (balance 0) — between months that compensate, or just before a recovery.
+                <b>Why:</b> that month's invoice <b>was not issued/scanned</b> → gap in the history.
+                <b>Action:</b> chase the missing invoice from the utility/MeterHub.
               </li>
               <li>
-                <span className="audit-tag b">recuperação</span>
-                <b>Regra:</b> um pico de compensação que <b>cobre meses anteriores represados</b> — o compensado ≤ (consumo acumulado dos meses zerados anteriores + o do mês) × 1,5.
-                <b>Por quê:</b> quando uma fatura atrasa, a compensação represada cai toda no mês seguinte. É <b>energia real, não erro</b> — por isso <b>não</b> é glitch. O total do ano fica certo; só o faseamento é que "junta" dois meses.
-                <b>Ação:</b> nenhuma sobre o valor; o item real é a <b>fatura pendente</b> do mês anterior (marcado como contingência).
+                <span className="audit-tag b">recovery</span>
+                <b>Rule:</b> a compensation spike that <b>covers earlier backlogged months</b> — compensated ≤ (accumulated consumption of the prior zeroed months + that of the month) × 1.5.
+                <b>Why:</b> when an invoice is late, the backlogged compensation all lands in the following month. It is <b>real energy, not an error</b> — that's why it is <b>not</b> a glitch. The year total stays correct; only the phasing "merges" two months.
+                <b>Action:</b> none on the value; the real item is the <b>pending invoice</b> from the previous month (flagged as contingency).
               </li>
             </ul>
 
-            <h4>O caso que motivou a regra "recuperação"</h4>
+            <h4>The case that motivated the "recovery" rule</h4>
             <p>
-              UC 2124500-2 (Manaus): outubro/2025 consumiu 1.894 kWh e compensou 0 (fatura não escaneada); novembro compensou <b>3.316</b> ≈
-              outubro + novembro juntos. A leitura ingênua chamaria novembro de "glitch" (180% do consumo). Mas 3.316 ≤ (1.894 + 1.841) × 1,5,
-              logo é <b>recuperação</b> — e o problema real é a <b>fatura de outubro</b>. A regra agora separa os dois automaticamente.
+              UC 2124500-2 (Manaus): October/2025 consumed 1,894 kWh and compensated 0 (invoice not scanned); November compensated <b>3,316</b> ≈
+              October + November combined. The naive reading would call November a "glitch" (180% of consumption). But 3,316 ≤ (1,894 + 1,841) × 1.5,
+              so it is <b>recovery</b> — and the real problem is the <b>October invoice</b>. The rule now separates the two automatically.
             </p>
 
             <p className="ajuda-caveat">
-              ⚠ <b>São heurísticas, não veredictos.</b> Os limiares (injeção &gt; 5.000 kWh, pico &gt; 1,5× consumo) foram calibrados nos casos que
-              investigamos. Elas <b>apontam candidatos</b> a erro — cada sinal ainda pede conferência humana. Por isso cada linha é clicável:
-              leva direto à aba <b>Compensação</b>, ao histórico real de banco/rateio daquela UC.
+              ⚠ <b>These are heuristics, not verdicts.</b> The thresholds (injection &gt; 5,000 kWh, spike &gt; 1.5× consumption) were calibrated on the cases we
+              investigated. They <b>point out candidates</b> for error — each signal still needs human review. That's why every row is clickable:
+              it goes straight to the <b>Compensation</b> tab, to the real bank/allocation history of that UC.
             </p>
           </div>
         )}
 
         <div className="audit-filtros">
-          <button className={`chip-btn ${filtro === 'todos' ? 'on' : ''}`} onClick={() => setFiltro('todos')}>Todos ({cont.total})</button>
+          <button className={`chip-btn ${filtro === 'todos' ? 'on' : ''}`} onClick={() => setFiltro('todos')}>All ({cont.total})</button>
           {PROBLEMAS.map((p) => (
             <button key={p.key} className={`chip-btn sev-${p.cor} ${filtro === p.key ? 'on' : ''}`} title={p.desc} onClick={() => setFiltro(p.key)}>
               {p.label} ({cont[p.key]})
             </button>
           ))}
-          <input className="search" placeholder="Buscar UC, usina, distribuidora…" value={busca} onChange={(e) => setBusca(e.target.value)} />
+          <input className="search" placeholder="Search UC, plant, utility…" value={busca} onChange={(e) => setBusca(e.target.value)} />
           <select value={usinaF} onChange={(e) => setUsinaF(e.target.value)}>
-            <option value="todas">todas as usinas</option>
+            <option value="todas">all plants</option>
             {usinas.map((u) => <option key={u} value={u}>{u}</option>)}
           </select>
-          <button className="btn-export" onClick={exportCSV}>⤓ Exportar CSV</button>
+          <button className="btn-export" onClick={exportCSV}>⤓ Export CSV</button>
         </div>
       </div>
 
@@ -223,13 +223,13 @@ export default function AuditoriaPanel({ onAbrir }: { onAbrir?: (usina: string, 
         <table>
           <thead>
             <tr>
-              <th>UC</th><th>Usina</th><th>Distribuidora</th><th className="r">Rateio</th>
-              <th className="r">Consumo (ano)</th><th className="r">Compensado (ano)</th><th>Problema(s)</th>
+              <th>UC</th><th>Plant</th><th>Utility</th><th className="r">Allocation</th>
+              <th className="r">Consumption (year)</th><th className="r">Compensated (year)</th><th>Problem(s)</th>
             </tr>
           </thead>
           <tbody>
             {lista.map((f) => (
-              <tr key={f.usina + f.uc} className={onAbrir ? 'clickable' : ''} onClick={onAbrir ? () => onAbrir(f.usina, f.uc) : undefined} title={onAbrir ? 'Abrir na aba Compensação' : ''}>
+              <tr key={f.usina + f.uc} className={onAbrir ? 'clickable' : ''} onClick={onAbrir ? () => onAbrir(f.usina, f.uc) : undefined} title={onAbrir ? 'Open in Compensation tab' : ''}>
                 <td className="mono"><span className="audit-uc-link">{f.uc} ↗</span></td>
                 <td>{f.usina}</td>
                 <td className="muted">{f.dist || '—'}</td>
@@ -237,22 +237,22 @@ export default function AuditoriaPanel({ onAbrir }: { onAbrir?: (usina: string, 
                 <td className="r muted">{n0(f.consumo)}</td>
                 <td className="r strong">{n0(f.compensado)}</td>
                 <td>
-                  {f.semRateio && <span className="audit-tag r">sem rateio</span>}
-                  {f.geradora && <span className="audit-tag y">⚡ geradora</span>}
+                  {f.semRateio && <span className="audit-tag r">no allocation</span>}
+                  {f.geradora && <span className="audit-tag y">⚡ generator</span>}
                   {f.glitch && <span className="audit-tag r">⚠ glitch</span>}
-                  {f.contingencia && <span className="audit-tag y">contingência</span>}
-                  {f.recuperacao && <span className="audit-tag b">recuperação</span>}
+                  {f.contingencia && <span className="audit-tag y">contingency</span>}
+                  {f.recuperacao && <span className="audit-tag b">recovery</span>}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
         {flags.length > lista.length && filtro === 'todos' && !busca && usinaF === 'todas' && (
-          <p className="hint">Mostrando as {lista.length} maiores por compensação. Use os filtros ou exporte o CSV para ver todas ({cont.total}).</p>
+          <p className="hint">Showing the {lista.length} largest by compensation. Use the filters or export the CSV to see all ({cont.total}).</p>
         )}
       </div>
       <footer className="foot">
-        Fonte: <b>MeterHub</b> (comp_portfolio, 12 meses). Regras: <b>geradora</b> = injeção &gt; 5.000 kWh e &gt; consumo · <b>glitch</b> = pico de compensado &gt; máx(consumo, injeção)×1,5 <i>não</i> explicado por recuperação · <b>recuperação</b> = pico que cobre meses anteriores represados (≤ consumo acumulado×1,5) · <b>sem rateio</b> = compensa &gt; 1 MWh/ano com BV 0% · <b>contingência</b> = mês consumindo sem compensar (inclui o mês antes de uma recuperação).
+        Source: <b>MeterHub</b> (comp_portfolio, 12 months). Rules: <b>generator</b> = injection &gt; 5,000 kWh and &gt; consumption · <b>glitch</b> = compensated spike &gt; max(consumption, injection)×1.5 <i>not</i> explained by recovery · <b>recovery</b> = spike covering earlier backlogged months (≤ accumulated consumption×1.5) · <b>no allocation</b> = compensates &gt; 1 MWh/year with BV 0% · <b>contingency</b> = month consuming without compensating (includes the month before a recovery).
       </footer>
     </>
   );

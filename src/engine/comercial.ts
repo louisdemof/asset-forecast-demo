@@ -102,10 +102,10 @@ export interface FimContrato {
 export function fimContrato(deal: Pick<DealComercial, 'prazoContrato' | 'signingDate' | 'inicioCompensacao'>): FimContrato {
   const t = str(deal.prazoContrato);
   const termOriginal = t;
-  if (!t) return { fim: null, tipo: 'indeterminado', detalhe: 'sem prazo', termOriginal };
+  if (!t) return { fim: null, tipo: 'indeterminado', detalhe: 'no term', termOriginal };
 
   const mUntil = t.match(/until\s+(\d{4})/i);
-  if (mUntil) return { fim: `${mUntil[1]}-12-31`, tipo: 'explícito', detalhe: `explícito (${t})`, termOriginal };
+  if (mUntil) return { fim: `${mUntil[1]}-12-31`, tipo: 'explícito', detalhe: `explicit (${t})`, termOriginal };
 
   const mYears = t.match(/^(\d+)\s*(years?)?\s*\*?$/i);
   if (mYears) {
@@ -117,13 +117,13 @@ export function fimContrato(deal: Pick<DealComercial, 'prazoContrato' | 'signing
       if (baseISO) {
         const d = new Date(baseISO.slice(0, 10) + 'T00:00:00Z');
         d.setUTCFullYear(d.getUTCFullYear() + n);
-        const marco = iniOk ? 'início compensação' : 'assinatura';
-        return { fim: d.toISOString().slice(0, 10), tipo: 'estimada', detalhe: `estimada (+${n}a de ${marco})`, termOriginal };
+        const marco = iniOk ? 'compensation start' : 'signing';
+        return { fim: d.toISOString().slice(0, 10), tipo: 'estimada', detalhe: `estimated (+${n}y from ${marco})`, termOriginal };
       }
-      return { fim: null, tipo: 'indeterminado', detalhe: `prazo ${n}a — sem data-base (NEXUS)`, termOriginal };
+      return { fim: null, tipo: 'indeterminado', detalhe: `term ${n}y — no base date (NEXUS)`, termOriginal };
     }
   }
-  return { fim: null, tipo: 'indeterminado', detalhe: `prazo inválido (${t})`, termOriginal };
+  return { fim: null, tipo: 'indeterminado', detalhe: `invalid term (${t})`, termOriginal };
 }
 
 /** Fator de rampa para um offtaker no mês (1-based). Fora da curva ⇒ 1.0. */

@@ -85,10 +85,10 @@ function UCMiniChart({ serie, inj }: { serie: UCSerieMes[]; inj?: number[] }) {
   return (
     <>
     <div className="chart-legend">
-      <span><i className="lg-bar" style={{ background: '#c6da38' }} /> compensado <em>(kWh · dir.)</em></span>
-      <span><i className="lg-line" style={{ background: '#7a4fa3' }} /> consumo <em>(kWh · dir.)</em></span>
-      {inj && <span><i className="lg-line" style={{ background: '#c98a1a' }} /> injeção <em>(kWh · dir.)</em></span>}
-      <span><i className="lg-line" style={{ background: '#004b70' }} /> saldo do banco <em>(kWh · esq.)</em></span>
+      <span><i className="lg-bar" style={{ background: '#c6da38' }} /> offset <em>(kWh · right)</em></span>
+      <span><i className="lg-line" style={{ background: '#7a4fa3' }} /> consumption <em>(kWh · right)</em></span>
+      {inj && <span><i className="lg-line" style={{ background: '#c98a1a' }} /> injection <em>(kWh · right)</em></span>}
+      <span><i className="lg-line" style={{ background: '#004b70' }} /> bank balance <em>(kWh · left)</em></span>
     </div>
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: 660, height: 'auto' }}>
       {/* eixo ESQUERDO — saldo do banco (kWh) */}
@@ -98,7 +98,7 @@ function UCMiniChart({ serie, inj }: { serie: UCSerieMes[]; inj?: number[] }) {
           <text x={2} y={ys(v) + 3} fontSize="8.5" fill="#5c7c90">{fk(v)}</text>
         </g>
       ); })}
-      <text x={2} y={pad - 8} fontSize="8" fill="#004b70" fontWeight={600}>← banco</text>
+      <text x={2} y={pad - 8} fontSize="8" fill="#004b70" fontWeight={600}>← bank</text>
       {/* eixo DIREITO — energia do mês (kWh): compensado / consumo / injeção */}
       {[0, 1 / 3, 2 / 3, 1].map((t) => { const v = t * maxE; return (
         <g key={`re${t}`}>
@@ -145,7 +145,7 @@ function PerfCompChart({ ex, consumo, compensado }: { ex: Exemplo; consumo?: Rec
   const lineComp = s.map((m, i) => `${x(i)},${yK(compVal(m))}`).join(' ');
   const d = sel != null ? s[sel] : null;
   const LegItem = ({ k, cor, tipo, label, sub }: { k: string; cor: string; tipo: 'bar' | 'line' | 'dash' | 'dot'; label: string; sub: string }) => (
-    <button className={`lg-item ${vis(k) ? '' : 'off'}`} onClick={() => toggle(k)} title="Mostrar/ocultar">
+    <button className={`lg-item ${vis(k) ? '' : 'off'}`} onClick={() => toggle(k)} title="Show/hide">
       <i className={tipo === 'bar' ? '' : tipo === 'dot' ? 'lg-dot' : 'lg-line'}
          style={tipo === 'bar' ? { display: 'inline-block', width: 11, height: 11, background: cor, opacity: 0.6, borderRadius: 2, verticalAlign: 'middle' } : { background: cor }} />
       {' '}{label} <em>{sub}</em>
@@ -154,32 +154,32 @@ function PerfCompChart({ ex, consumo, compensado }: { ex: Exemplo; consumo?: Rec
   return (
     <>
       <div className="chart-legend selectable">
-        <LegItem k="inj" cor="#c6da38" tipo="bar" label="injeção" sub="kWh · eixo dir. →" />
-        <LegItem k="comp" cor="#1f9e89" tipo="line" label="compensado" sub="kWh · eixo dir. →" />
-        {consumo && <LegItem k="cons" cor="#7a4fa3" tipo="dash" label="consumo" sub="kWh · eixo dir. →" />}
-        <LegItem k="movel" cor="#004b70" tipo="line" label="perfComp móvel" sub="% · eixo esq. ←" />
-        <LegItem k="mes" cor="#9bb8c6" tipo="dot" label="perfComp mensal" sub="% · eixo esq. ←" />
-        <span className="lg-static"><i className="lg-dash" /> 100% <em>(acima = sacou do banco)</em></span>
-        <button className="ajuda-toggle" onClick={() => setAjuda((v) => !v)}>{ajuda ? '▾ ocultar' : '❔ mensal × móvel'}</button>
+        <LegItem k="inj" cor="#c6da38" tipo="bar" label="injection" sub="kWh · right axis →" />
+        <LegItem k="comp" cor="#1f9e89" tipo="line" label="offset" sub="kWh · right axis →" />
+        {consumo && <LegItem k="cons" cor="#7a4fa3" tipo="dash" label="consumption" sub="kWh · right axis →" />}
+        <LegItem k="movel" cor="#004b70" tipo="line" label="perfComp rolling" sub="% · left axis ←" />
+        <LegItem k="mes" cor="#9bb8c6" tipo="dot" label="perfComp monthly" sub="% · left axis ←" />
+        <span className="lg-static"><i className="lg-dash" /> 100% <em>(above = drew from the bank)</em></span>
+        <button className="ajuda-toggle" onClick={() => setAjuda((v) => !v)}>{ajuda ? '▾ hide' : '❔ monthly × rolling'}</button>
       </div>
       {ajuda && (
         <div className="ajuda-box" style={{ margin: '2px 0 10px' }}>
-          <h4>perfComp mensal × perfComp móvel</h4>
+          <h4>perfComp monthly × perfComp rolling</h4>
           <p>
-            Os dois medem a mesma coisa — <b>quanto da energia injetada virou compensação</b> (compensado ÷ injeção) — mas em janelas diferentes.
+            Both measure the same thing — <b>how much of the injected energy became offset</b> (offset ÷ injection) — but over different windows.
           </p>
           <ul className="ajuda-list">
             <li>
-              <b>perfComp mensal</b> = compensado <b>do mês</b> ÷ injeção <b>do mês</b>.
-              <b>Balança muito</b> (ex. 30%→160%): a compensação de um mês pode vir da injeção de <i>outro</i> mês (banco de créditos), e mês com injeção baixa/zero dispara o %. <b>Serve para ver a volatilidade</b>, não para decidir.
+              <b>perfComp monthly</b> = offset <b>for the month</b> ÷ injection <b>for the month</b>.
+              <b>Swings a lot</b> (e.g. 30%→160%): a month's offset may come from <i>another</i> month's injection (credit bank), and a month with low/zero injection spikes the %. <b>Useful to see volatility</b>, not to decide.
             </li>
             <li>
-              <b>perfComp móvel</b> = <b>Σ</b>compensado ÷ <b>Σ</b>injeção <b>acumulado</b> (janela 12 meses).
-              <b>Estável e confiável</b>: filtra o descasamento temporal e converge para a razão real de longo prazo. <b>É o número que substitui o input manual da Billing</b> no forecast.
+              <b>perfComp rolling</b> = <b>Σ</b>offset ÷ <b>Σ</b>injection <b>cumulative</b> (12-month window).
+              <b>Stable and reliable</b>: filters out the temporal mismatch and converges to the real long-term ratio. <b>It is the number that replaces the manual Billing input</b> in the forecast.
             </li>
           </ul>
           <p className="ajuda-caveat">
-            Acima de <b>100%</b> = compensou mais do que injetou naquele período → <b>sacou do banco de créditos</b> (não é erro). O móvel &gt; 100% sustentado indica banco sendo consumido; &lt; 100% indica banco acumulando.
+            Above <b>100%</b> = offset more than was injected in that period → <b>drew from the credit bank</b> (not an error). A sustained rolling value &gt; 100% indicates the bank is being consumed; &lt; 100% indicates the bank is accumulating.
           </p>
         </div>
       )}
@@ -191,7 +191,7 @@ function PerfCompChart({ ex, consumo, compensado }: { ex: Exemplo; consumo?: Rec
           </g>
         ))}
         {/* título do eixo ESQUERDO (%) — perfComp */}
-        <text x={4} y={pad - 8} fontSize="9" fill="#004b70" fontWeight={600}>← % perfComp</text>
+        <text x={4} y={pad - 8} fontSize="9" fill="#004b70" fontWeight={600}>← % perfComp</text>{/* left axis title (%) — perfComp */}
         {/* barras de injeção (eixo kWh) — atrás das linhas */}
         {vis('inj') && s.map((m, i) => {
           const hInj = (m.injetado / maxKwh) * (H - 2 * pad);
@@ -230,16 +230,16 @@ function PerfCompChart({ ex, consumo, compensado }: { ex: Exemplo; consumo?: Rec
       {d && (
         <div className="perfcomp-detalhe">
           <b>{fmtMes(d.mes)}</b>
-          {consAt(d.mes) != null && <span>Consumo: <b>{kwh(consAt(d.mes)!)} kWh</b></span>}
-          <span>Injetado: <b>{kwh(d.injetado)} kWh</b></span>
-          <span>Compensado: <b>{kwh(compVal(d))} kWh</b></span>
-          {consAt(d.mes) ? <span>Aproveit.: <b>{Math.round((compVal(d) / consAt(d.mes)!) * 100)}%</b></span> : null}
-          <span>Saldo banco: <b>{kwh(d.saldo)} kWh</b></span>
-          <span>perfComp mês: <b className="grey-t">{d.perfMes ?? '—'}%</b></span>
-          <span>perfComp móvel: <b className="navy-t">{d.perfMovel}%</b></span>
+          {consAt(d.mes) != null && <span>Consumption: <b>{kwh(consAt(d.mes)!)} kWh</b></span>}
+          <span>Injected: <b>{kwh(d.injetado)} kWh</b></span>
+          <span>Offset: <b>{kwh(compVal(d))} kWh</b></span>
+          {consAt(d.mes) ? <span>Utiliz.: <b>{Math.round((compVal(d) / consAt(d.mes)!) * 100)}%</b></span> : null}
+          <span>Bank balance: <b>{kwh(d.saldo)} kWh</b></span>
+          <span>perfComp month: <b className="grey-t">{d.perfMes ?? '—'}%</b></span>
+          <span>perfComp rolling: <b className="navy-t">{d.perfMovel}%</b></span>
         </div>
       )}
-      {!d && <p className="foot" style={{ margin: '4px 0 0', textAlign: 'center' }}>clique num mês pra ver injetado, compensado e saldo do banco</p>}
+      {!d && <p className="foot" style={{ margin: '4px 0 0', textAlign: 'center' }}>click a month to see injected, offset and bank balance</p>}
     </>
   );
 }
@@ -273,15 +273,15 @@ function InjecaoCompare({ eng, exc }: { eng: SerieMes[]; exc?: InjExcel }) {
   return (
     <div style={{ marginBottom: 14 }}>
       <div style={{ fontSize: 13, fontWeight: 600, color: '#004b70', marginBottom: 4 }}>
-        Injeção: Excel (Performance) × MeterHub (API) — MWh
+        Injection: Excel (Performance) × MeterHub (API) — MWh
         {maxDelta != null && (
           <span className={`inj-status ${maxDelta <= 0.02 ? 'ok' : 'warn'}`} style={{ marginLeft: 8 }}>
-            {maxDelta <= 0.02 ? `✓ bate (máx ${(maxDelta * 100).toFixed(1)}%)` : `⚠ diverge (máx ${(maxDelta * 100).toFixed(1)}%)`}
+            {maxDelta <= 0.02 ? `✓ matches (max ${(maxDelta * 100).toFixed(1)}%)` : `⚠ diverges (max ${(maxDelta * 100).toFixed(1)}%)`}
           </span>
         )}
       </div>
       <table className="uc-table inj-table">
-        <thead><tr><th>Mês</th><th className="r">Excel</th><th className="r">MeterHub</th><th className="r">Δ</th><th className="r">PVsyst (esperado)</th><th>Situação</th></tr></thead>
+        <thead><tr><th>Month</th><th className="r">Excel</th><th className="r">MeterHub</th><th className="r">Δ</th><th className="r">PVsyst (expected)</th><th>Status</th></tr></thead>
         <tbody>
           {linhas.map((l) => (
             <tr key={l.m}>
@@ -294,14 +294,14 @@ function InjecaoCompare({ eng, exc }: { eng: SerieMes[]; exc?: InjExcel }) {
               <td className="r muted">{mwh1(l.pv)}</td>
               <td>
                 <span className={`comp-chip ${l.status === 'bate' ? 'ok' : l.status === 'diverge' ? 'nao' : 'ramp'}`}>
-                  {l.status === 'bate' ? '✓ bate' : l.status === 'diverge' ? '⚠ diverge' : l.status === 'so-excel' ? 'só Excel' : 'só MeterHub'}
+                  {l.status === 'bate' ? '✓ matches' : l.status === 'diverge' ? '⚠ diverges' : l.status === 'so-excel' ? 'Excel only' : 'MeterHub only'}
                 </span>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p className="hint" style={{ marginTop: 4 }}>Excel (aba Performance) e MeterHub são a mesma fonte de medição — "bate" confirma o pull; "diverge/só Excel/só MeterHub" sinaliza mês não fechado, planilha desatualizada ou lacuna de mapeamento.</p>
+      <p className="hint" style={{ marginTop: 4 }}>Excel (Performance tab) and MeterHub are the same measurement source — "matches" confirms the pull; "diverges/Excel only/MeterHub only" flags an unclosed month, an outdated spreadsheet or a mapping gap.</p>
     </div>
   );
 }
@@ -419,7 +419,7 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
       });
   }, [dados, mes, busca, sort, clientePorUsina, rateioScore]);
 
-  if (!dados) return <div className="state">Carregando…</div>;
+  if (!dados) return <div className="state">Loading…</div>;
 
   const totUC = linhas.reduce((s, x) => s + x.d.nUCs, 0);
   // totais LIMPOS: excluem UC geradora e meses-glitch (compensação impossível)
@@ -429,71 +429,71 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
   return (
     <>
       <section className="kpis">
-        <Kpi label="Usinas" value={String(linhas.length)} sub="da Base MeterHub" accent />
-        <Kpi label="UCs mapeadas" value={n0(totUC)} sub={`no mês ${fmtMes(mes)}`} />
-        <Kpi label="Compensado (mês)" value={`${n0(totComp / 1000)} MWh`} sub="energia compensada" />
-        <Kpi label="Aproveitamento médio" value={pctv(totCons ? totComp / totCons : null)} sub="compensado ÷ consumo" />
+        <Kpi label="Plants" value={String(linhas.length)} sub="from the MeterHub Base" accent />
+        <Kpi label="UCs mapped" value={n0(totUC)} sub={`in ${fmtMes(mes)}`} />
+        <Kpi label="Offset (month)" value={`${n0(totComp / 1000)} MWh`} sub="energy offset" />
+        <Kpi label="Average utilization" value={pctv(totCons ? totComp / totCons : null)} sub="offset ÷ consumption" />
       </section>
 
       {exemplo && (
         <div className="perfcomp-card">
           <div className="perfcomp-head">
             <div>
-              <h4>perfComp calculado do jeito certo — {exemplo.usina}</h4>
-              <p>Σ compensado ÷ Σ injetado, da API (12 meses reais). O mensal balança; a <b>razão móvel</b> converge.</p>
+              <h4>perfComp computed the right way — {exemplo.usina}</h4>
+              <p>Σ offset ÷ Σ injected, from the API (12 real months). The monthly value swings; the <b>rolling ratio</b> converges.</p>
             </div>
           </div>
           <PerfCompChart ex={exemplo} consumo={serieLimpaDe(exemplo.usina, 'consumo')} compensado={serieLimpaDe(exemplo.usina, 'compensado')} />
           <p className="foot" style={{ marginTop: 4 }}>
-            Real, da API MeterHub: injeção da UC geradora + compensação de 26 UCs consumidoras. O mensal vai de ~30% a ~160% (com meses de injeção 0);
-            o móvel estabiliza em ~{exemplo.serie.at(-1)?.perfMovel}%. É o número que substitui o input manual da Billing.
+            Real, from the MeterHub API: injection from the generating UC + offset from 26 consuming UCs. The monthly value ranges from ~30% to ~160% (with months of 0 injection);
+            the rolling value stabilizes at ~{exemplo.serie.at(-1)?.perfMovel}%. It is the number that replaces the manual Billing input.
           </p>
         </div>
       )}
 
       <div className="ok" style={{ marginBottom: 16, padding: '12px 16px', borderRadius: 12, border: '1px solid #cfe0ad', background: '#eaf3e0', color: '#3c5417', fontSize: 13.5 }}>
-        <b>Dado real da MeterHub</b> (Base MeterHub): {dados.length} usinas · rateio + consumo + compensação por UC. <b>Aproveitamento</b> = compensado ÷ consumo (métrica sólida). O <b>perfComp móvel</b> (acima) usa injeção da UC geradora ÷ compensação, em janela de 12 meses.
+        <b>Real MeterHub data</b> (MeterHub Base): {dados.length} plants · allocation + consumption + offset per UC. <b>Utilization</b> = offset ÷ consumption (a solid metric). The <b>perfComp rolling</b> (above) uses generating-UC injection ÷ offset, over a 12-month window.
       </div>
 
-      <div className="data-stamp" title="Procedência dos dados da MeterHub. Atualizar em src/lib/dataInfo.ts ao repuxar.">
-        📅 <b>MeterHub</b> · {carimboMeterHub()} &nbsp;·&nbsp; snapshot {fmtMes(DATA_INFO.MeterHub.snapshot)}. Dados de UC vêm de faturas escaneadas (defasagem de 1–2 meses).
+      <div className="data-stamp" title="Provenance of the MeterHub data. Update in src/lib/dataInfo.ts when re-pulling.">
+        📅 <b>MeterHub</b> · {carimboMeterHub()} &nbsp;·&nbsp; snapshot {fmtMes(DATA_INFO.MeterHub.snapshot)}. UC data comes from scanned invoices (1–2 month lag).
       </div>
 
       <div className="toolbar">
-        <input className="search" placeholder="Buscar usina…" value={busca} onChange={(e) => setBusca(e.target.value)} />
+        <input className="search" placeholder="Search plant…" value={busca} onChange={(e) => setBusca(e.target.value)} />
         <div className="filtros" style={{ margin: 0 }}>
-          <label>Mês
+          <label>Month
             <select value={mes} onChange={(e) => setMes(e.target.value)}>
-              {meses.map((m) => <option key={m} value={m}>{fmtMes(m)}{ehParcial(m) ? ' (parcial)' : ''}</option>)}
+              {meses.map((m) => <option key={m} value={m}>{fmtMes(m)}{ehParcial(m) ? ' (partial)' : ''}</option>)}
             </select>
           </label>
-          {ehParcial(mes) && <span className="parcial-tag" title="Mês ainda em fechamento — faturas não totalmente emitidas/escaneadas. Não confiar no total.">⚠ mês parcial</span>}
+          {ehParcial(mes) && <span className="parcial-tag" title="Month still closing — invoices not fully issued/scanned. Do not trust the total.">⚠ partial month</span>}
         </div>
-        <button className="ajuda-toggle" onClick={() => setAjudaTab((v) => !v)}>{ajudaTab ? '▾ ocultar' : '❔ como ler esta aba'}</button>
-        <span className="count">{linhas.length} usinas</span>
+        <button className="ajuda-toggle" onClick={() => setAjudaTab((v) => !v)}>{ajudaTab ? '▾ hide' : '❔ how to read this tab'}</button>
+        <span className="count">{linhas.length} plants</span>
       </div>
 
       {ajudaTab && (
         <div className="ajuda-box">
-          <h4>Como ler esta aba</h4>
+          <h4>How to read this tab</h4>
           <p>
-            Compensação real medida pela <b>MeterHub</b>, por usina e por UC. Cada linha é uma usina; <b>clique</b> para abrir as UCs, o
-            gráfico de perfComp e o seletor de mês. <b>Clique nos cabeçalhos</b> para ordenar. Os totais são <b>limpos</b> (Σ das UCs
-            consumidoras, sem a geradora nem glitches de fatura).
+            Real offset measured by <b>MeterHub</b>, per plant and per UC. Each row is a plant; <b>click</b> to open the UCs, the
+            perfComp chart and the month selector. <b>Click the headers</b> to sort. The totals are <b>clean</b> (Σ of the consuming
+            UCs, without the generator or invoice glitches).
           </p>
           <ul className="ajuda-list">
-            <li><b>Usina</b> — badge <span className="rateio-badge ok">rateio ✓</span> = ΣBV entre 95–105% (rateio completo na MeterHub); <span className="rateio-badge inc">rateio N%</span> = incompleto (dado faltando).</li>
-            <li><b>Cliente</b> — link ↗ abre o contrato. Chip <span className="metodo-chip modelo-AR" style={{ fontSize: 10 }}>AR</span> = Autoconsumo Remoto (compensação medida) · <span className="metodo-chip modelo-GC" style={{ fontSize: 10 }}>GC</span> = Geração Compartilhada.</li>
-            <li><b>UCs</b> — nº de unidades. <b className="uc-excl">−N</b> = N UCs <b>excluídas do total</b> (geradora e/ou glitch de fatura). <b className="uc-semrateio">N s/rateio</b> = N UCs compensam <b>sem rateio declarado</b> (BV faltando → investigar com a MeterHub).</li>
-            <li><b>Consumo / Compensado</b> — valores <b>limpos</b> (kWh). O <b>✓</b> no compensado indica que houve exclusão de geradora/glitch (passe o mouse pra ver o bruto).</li>
-            <li><b>Compensado 12m</b> — mini-gráfico (sparkline) da tendência do <b>compensado limpo</b> nos 12 meses disponíveis; cada ponto é um mês.</li>
-            <li><b>Injeção</b> — injeção medida na MeterHub (valor da <b>fatura</b> da geradora, não telemetria).</li>
-            <li><b>Aproveitamento</b> — compensado ÷ consumo (≤100% é saudável; acima sugere sacar do banco ou dado inflado).</li>
-            <li><b>Saldo banco</b> — créditos acumulados da usina (Σ das UCs consumidoras) no mês. Sobe quando injeta mais do que compensa; desce quando compensa mais do que injeta.</li>
-            <li><b>Otim. rateio</b> — score 0–100 de <b>quão bem a injeção está alocada ao consumo</b> (é otimização — diferente do "rateio ✓", que é completude do dado).</li>
+            <li><b>Plant</b> — badge <span className="rateio-badge ok">allocation ✓</span> = ΣBV between 95–105% (complete allocation in MeterHub); <span className="rateio-badge inc">allocation N%</span> = incomplete (missing data).</li>
+            <li><b>Client</b> — the ↗ link opens the contract. Chip <span className="metodo-chip modelo-AR" style={{ fontSize: 10 }}>AR</span> = Remote Self-Consumption (measured offset) · <span className="metodo-chip modelo-GC" style={{ fontSize: 10 }}>GC</span> = Shared Generation.</li>
+            <li><b>UCs</b> — number of units. <b className="uc-excl">−N</b> = N UCs <b>excluded from the total</b> (generator and/or invoice glitch). <b className="uc-semrateio">N no allocation</b> = N UCs offset <b>with no declared allocation</b> (missing BV → investigate with MeterHub).</li>
+            <li><b>Consumption / Offset</b> — <b>clean</b> values (kWh). The <b>✓</b> on the offset indicates a generator/glitch was excluded (hover to see the gross value).</li>
+            <li><b>Offset 12m</b> — mini-chart (sparkline) of the <b>clean offset</b> trend over the 12 available months; each point is a month.</li>
+            <li><b>Injection</b> — injection measured in MeterHub (value from the generator's <b>invoice</b>, not telemetry).</li>
+            <li><b>Utilization</b> — offset ÷ consumption (≤100% is healthy; above suggests drawing from the bank or inflated data).</li>
+            <li><b>Bank balance</b> — the plant's accumulated credits (Σ of the consuming UCs) in the month. Rises when it injects more than it offsets; falls when it offsets more than it injects.</li>
+            <li><b>Alloc. optim.</b> — 0–100 score of <b>how well injection is allocated to consumption</b> (this is optimization — different from "allocation ✓", which is data completeness).</li>
           </ul>
           <p className="ajuda-caveat">
-            ⚠ <b>Mês parcial</b>: em fechamento, faturas não totalmente escaneadas — não confie no total. As faturas de UC têm <b>defasagem de 1–2 meses</b>. Ao expandir uma UC, o <b>❔ mensal × móvel</b> explica o gráfico de perfComp.
+            ⚠ <b>Partial month</b>: still closing, invoices not fully scanned — do not trust the total. UC invoices have a <b>1–2 month lag</b>. When you expand a UC, the <b>❔ monthly × rolling</b> explains the perfComp chart.
           </p>
         </div>
       )}
@@ -503,16 +503,16 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
           <thead>
             <tr>
               <th className="chev-col"></th>
-              <CompTh k="usina" sort={sort} on={ordenar}>Usina</CompTh>
-              <CompTh k="cliente" sort={sort} on={ordenar}>Cliente</CompTh>
+              <CompTh k="usina" sort={sort} on={ordenar}>Plant</CompTh>
+              <CompTh k="cliente" sort={sort} on={ordenar}>Client</CompTh>
               <CompTh k="ucs" sort={sort} on={ordenar} r>UCs</CompTh>
-              <CompTh k="consumo" sort={sort} on={ordenar} r>Consumo</CompTh>
-              <CompTh k="compensado" sort={sort} on={ordenar} r>Compensado</CompTh>
-              <th className="r" title="Tendência do compensado (limpo) nos 12 meses disponíveis — cada ponto é um mês">Compensado 12m</th>
-              <CompTh k="injecao" sort={sort} on={ordenar} r>Injeção</CompTh>
-              <CompTh k="aproveit" sort={sort} on={ordenar} r title="Compensado ÷ Consumo (≤100%)">Aproveit.</CompTh>
-              <CompTh k="saldo" sort={sort} on={ordenar} r title="Saldo do banco de créditos da usina (Σ das UCs consumidoras), no mês selecionado">Saldo banco</CompTh>
-              <CompTh k="otim" sort={sort} on={ordenar} r title="Score de otimização de rateio: quão bem a injeção está alocada ao consumo">Otim. rateio</CompTh>
+              <CompTh k="consumo" sort={sort} on={ordenar} r>Consumption</CompTh>
+              <CompTh k="compensado" sort={sort} on={ordenar} r>Offset</CompTh>
+              <th className="r" title="Clean offset trend over the 12 available months — each point is a month">Offset 12m</th>
+              <CompTh k="injecao" sort={sort} on={ordenar} r>Injection</CompTh>
+              <CompTh k="aproveit" sort={sort} on={ordenar} r title="Offset ÷ Consumption (≤100%)">Utiliz.</CompTh>
+              <CompTh k="saldo" sort={sort} on={ordenar} r title="Plant's credit bank balance (Σ of the consuming UCs), in the selected month">Bank balance</CompTh>
+              <CompTh k="otim" sort={sort} on={ordenar} r title="Allocation optimization score: how well injection is allocated to consumption">Alloc. optim.</CompTh>
             </tr>
           </thead>
           <tbody>
@@ -552,8 +552,8 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
                       {usina}
                       {d.rateioPct != null && (
                         d.rateioPct >= 0.95 && d.rateioPct <= 1.05
-                          ? <span className="rateio-badge ok" title={`rateio completo (ΣBV ${(d.rateioPct * 100).toFixed(0)}%)`}>rateio ✓</span>
-                          : <span className="rateio-badge inc" title="rateio incompleto na MeterHub — usar Modelo de Medição">rateio {(d.rateioPct * 100).toFixed(0)}%</span>
+                          ? <span className="rateio-badge ok" title={`complete allocation (ΣBV ${(d.rateioPct * 100).toFixed(0)}%)`}>allocation ✓</span>
+                          : <span className="rateio-badge inc" title="incomplete allocation in MeterHub — use the Metering Model">allocation {(d.rateioPct * 100).toFixed(0)}%</span>
                       )}
                     </td>
                     <td>
@@ -564,9 +564,9 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
                         return (
                           <>
                             <a className="cliente-link" onClick={(e) => { e.stopPropagation(); irParaUsina?.(c.projeto); }}>
-                              {c.cliente || 'ver contrato'} ↗
+                              {c.cliente || 'view contract'} ↗
                             </a>
-                            <span className={`metodo-chip modelo-${modelo}`} style={{ marginLeft: 6, fontSize: 10 }} title={modelo === 'AR' ? 'Autoconsumo Remoto — compensação medida (Faturas/API)' : 'Geração Compartilhada — compensação por contrato'}>
+                            <span className={`metodo-chip modelo-${modelo}`} style={{ marginLeft: 6, fontSize: 10 }} title={modelo === 'AR' ? 'Remote Self-Consumption — measured offset (Invoices/API)' : 'Shared Generation — offset by contract'}>
                               {modelo}
                             </span>
                           </>
@@ -575,11 +575,11 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
                     </td>
                     <td className="r muted">
                       {d.nUCs}
-                      {lim.excl > 0 && <span className="uc-excl" title={`${lim.excl} UC(s) fora do total — geradora e/ou meses com compensação impossível (glitch de fatura). Excluídos: ${n0(lim.exclComp)} kWh de 'compensado'.`}> −{lim.excl}</span>}
-                      {semRateio > 0 && <span className="uc-semrateio" title={`${semRateio} UC(s) compensam sem rateio declarado — investigar com a MeterHub (BV faltando).`}> {semRateio} s/rateio</span>}
+                      {lim.excl > 0 && <span className="uc-excl" title={`${lim.excl} UC(s) outside the total — generator and/or months with impossible offset (invoice glitch). Excluded: ${n0(lim.exclComp)} kWh of 'offset'.`}> −{lim.excl}</span>}
+                      {semRateio > 0 && <span className="uc-semrateio" title={`${semRateio} UC(s) offset with no declared allocation — investigate with MeterHub (missing BV).`}> {semRateio} no allocation</span>}
                     </td>
                     <td className="r muted">{n0(lim.consumo)}</td>
-                    <td className="r strong" title={lim.excl > 0 ? `Compensado LIMPO (Σ UCs consumidoras). Bruto na fonte: ${n0(d.compensado)} kWh — inflado por geradora/glitch.` : ''}>{n0(lim.compensado)}{lim.excl > 0 ? ' ✓' : ''}</td>
+                    <td className="r strong" title={lim.excl > 0 ? `CLEAN offset (Σ consuming UCs). Gross at source: ${n0(d.compensado)} kWh — inflated by generator/glitch.` : ''}>{n0(lim.compensado)}{lim.excl > 0 ? ' ✓' : ''}</td>
                     <td className="r"><Sparkline values={serie12} /></td>
                     <td className="r muted">{(() => {
                       if (d.injecao > 0) return n0(d.injecao);
@@ -589,10 +589,10 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
                     <td className="r">
                       <span className={`comp-chip ${lim.aproveit >= 0.9 ? 'ok' : lim.aproveit >= 0.6 ? 'ramp' : 'nao'}`}>{pctv(lim.aproveit)}</span>
                     </td>
-                    <td className="r muted" title="Saldo do banco de créditos (Σ UCs consumidoras) no mês">{n0(lim.saldo)}</td>
+                    <td className="r muted" title="Credit bank balance (Σ consuming UCs) in the month">{n0(lim.saldo)}</td>
                     <td className="r">
                       {rateioScore.has(usina)
-                        ? (() => { const sc = rateioScore.get(usina)!.score; return <span className={`score-badge ${sc >= 90 ? 'ok' : sc >= 75 ? 'mid' : 'low'}`} title="Score de OTIMIZAÇÃO de rateio (0–100): quão bem a injeção está alocada ao consumo. Diferente do 'rateio ✓' (completude dos dados).">{sc}%</span>; })()
+                        ? (() => { const sc = rateioScore.get(usina)!.score; return <span className={`score-badge ${sc >= 90 ? 'ok' : sc >= 75 ? 'mid' : 'low'}`} title="Allocation OPTIMIZATION score (0–100): how well injection is allocated to consumption. Different from 'allocation ✓' (data completeness).">{sc}%</span>; })()
                         : <span className="muted">—</span>}
                     </td>
                   </tr>
@@ -602,7 +602,7 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
                         <div className="uc-detail">
                           {perfUsinas.has(usina) && (
                             <div style={{ marginBottom: 14 }}>
-                              <div style={{ fontSize: 13, fontWeight: 600, color: '#004b70', marginBottom: 4 }}>perfComp móvel (API, {perfUsinas.get(usina)!.length} {perfUsinas.get(usina)!.length === 1 ? 'mês' : 'meses'}) — <span style={{ color: '#6692a8' }}>mensal</span> · <span style={{ color: '#004b70' }}>móvel</span></div>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: '#004b70', marginBottom: 4 }}>perfComp rolling (API, {perfUsinas.get(usina)!.length} {perfUsinas.get(usina)!.length === 1 ? 'month' : 'months'}) — <span style={{ color: '#6692a8' }}>monthly</span> · <span style={{ color: '#004b70' }}>rolling</span></div>
                               <PerfCompChart ex={{ usina, serie: perfUsinas.get(usina)! }} consumo={Object.fromEntries(mesesDisp.map((m) => [m, aggLimpo(mesesU[m].ucs ?? []).consumo]))} compensado={Object.fromEntries(mesesDisp.map((m) => [m, aggLimpo(mesesU[m].ucs ?? []).compensado]))} />
                             </div>
                           )}
@@ -613,16 +613,16 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
                             const rs = rateioScore.get(usina)!;
                             return (
                               <div className="rateio-otim">
-                                <div className="rateio-otim-h">Otimização de Rateio — <b className={`score-t ${rs.score >= 90 ? 'ok' : rs.score >= 75 ? 'mid' : 'low'}`}>score {rs.score}%</b></div>
+                                <div className="rateio-otim-h">Allocation Optimization — <b className={`score-t ${rs.score >= 90 ? 'ok' : rs.score >= 75 ? 'mid' : 'low'}`}>score {rs.score}%</b></div>
                                 <div className="rateio-kpis">
-                                  <span>Excesso → banco<b>{n0(rs.excesso)} kWh</b></span>
-                                  <span>Déficit (sub-servido)<b>{n0(rs.deficit)} kWh</b></span>
-                                  <span>Aproveitamento<b>{rs.aproveit}%</b></span>
-                                  <span>Banco acumulado<b>{rs.bancoMeses} meses</b></span>
+                                  <span>Excess → bank<b>{n0(rs.excesso)} kWh</b></span>
+                                  <span>Deficit (under-served)<b>{n0(rs.deficit)} kWh</b></span>
+                                  <span>Utilization<b>{rs.aproveit}%</b></span>
+                                  <span>Accumulated bank<b>{rs.bancoMeses} months</b></span>
                                 </div>
-                                <div className="rateio-otim-sub">UCs a reequilibrar — maior desvio (rateio atual → sugerido = proporcional ao consumo):</div>
+                                <div className="rateio-otim-sub">UCs to rebalance — largest deviation (current allocation → suggested = proportional to consumption):</div>
                                 <table className="uc-table">
-                                  <thead><tr><th>UC</th><th className="r">Consumo</th><th className="r">Saldo créd.</th><th className="r">Rateio atual</th><th className="r">Sugerido</th><th className="r">Δ</th><th>Situação</th></tr></thead>
+                                  <thead><tr><th>UC</th><th className="r">Consumption</th><th className="r">Credit bal.</th><th className="r">Current allocation</th><th className="r">Suggested</th><th className="r">Δ</th><th>Status</th></tr></thead>
                                   <tbody>
                                     {rs.ucs.slice(0, 10).map((u) => (
                                       <tr key={u.uc}>
@@ -632,7 +632,7 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
                                         <td className="r">{(u.rateio * 100).toFixed(2)}%</td>
                                         <td className="r strong">{(u.rateioSug * 100).toFixed(2)}%</td>
                                         <td className={`r ${u.delta >= 0 ? 'ok-text' : 'warn-text'}`}>{u.delta >= 0 ? '+' : ''}{(u.delta * 100).toFixed(2)}pp</td>
-                                        <td><span className={`comp-chip ${u.status === 'excesso' ? 'nao' : u.status === 'deficit' ? 'ramp' : 'ok'}`}>{u.status === 'excesso' ? '↓ reduzir' : u.status === 'deficit' ? '↑ aumentar' : 'ok'}</span></td>
+                                        <td><span className={`comp-chip ${u.status === 'excesso' ? 'nao' : u.status === 'deficit' ? 'ramp' : 'ok'}`}>{u.status === 'excesso' ? '↓ reduce' : u.status === 'deficit' ? '↑ increase' : 'ok'}</span></td>
                                       </tr>
                                     ))}
                                   </tbody>
@@ -643,16 +643,16 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
                           <div className="uc-detail-head">
                             <span>{dDet.nUCs} UCs · {usina}</span>
                             <label className="uc-mes-sel" onClick={(e) => e.stopPropagation()}>
-                              Mês:&nbsp;
+                              Month:&nbsp;
                               <select value={mesSel} onChange={(e) => setMesDet(e.target.value)}>
-                                {mesesDisp.map((m) => <option key={m} value={m}>{fmtMes(m)}{ehParcial(m) ? ' (parcial)' : ''}</option>)}
+                                {mesesDisp.map((m) => <option key={m} value={m}>{fmtMes(m)}{ehParcial(m) ? ' (partial)' : ''}</option>)}
                               </select>
                             </label>
                           </div>
                           <div className="uc-tablewrap">
                             <table className="uc-table">
                               <thead>
-                                <tr><th>UC</th><th>Distribuidora</th><th className="r">Rateio</th><th className="r">Consumo</th><th className="r" title="Injeção medida na MeterHub (kWh) — o medidor da geradora injeta; UCs consumidoras ficam ~0">Injeção</th><th className="r">Compensado</th><th className="r">Saldo créd.</th></tr>
+                                <tr><th>UC</th><th>Utility</th><th className="r">Allocation</th><th className="r">Consumption</th><th className="r" title="Injection measured in MeterHub (kWh) — the generator's meter injects; consuming UCs stay ~0">Injection</th><th className="r">Offset</th><th className="r">Credit bal.</th></tr>
                               </thead>
                               <tbody>
                                 {[...dDet.ucs].sort((a, b) => b.compensado - a.compensado).map((uc, i) => {
@@ -666,14 +666,14 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
                                     <Fragment key={uc.uc + i}>
                                       <tr ref={ucOpen ? ucRowRef : null} className={`${serie ? 'clickable' : ''} ${fora ? 'uc-geradora' : ''} ${ucOpen ? 'uc-alvo' : ''}`} onClick={serie ? () => setUcAberta(ucOpen ? null : uc.uc) : undefined}>
                                         <td className="mono">{serie ? (ucOpen ? '▾ ' : '▸ ') : ''}{uc.uc}
-                                          {geradora && <span className="uc-flag ger" title={`Medidor da GERADORA (injeta ${n0(uc.injetado)} kWh) — não é UC consumidora. Fora do total da usina.`}>⚡ geradora</span>}
-                                          {glitch && <span className="uc-flag ger" title="Compensado impossível (muito acima do consumo e da injeção) — glitch da fatura da distribuidora. Fora do total.">⚠ glitch</span>}
+                                          {geradora && <span className="uc-flag ger" title={`GENERATOR meter (injects ${n0(uc.injetado)} kWh) — not a consuming UC. Outside the plant total.`}>⚡ generator</span>}
+                                          {glitch && <span className="uc-flag ger" title="Impossible offset (well above consumption and injection) — utility invoice glitch. Outside the total.">⚠ glitch</span>}
                                         </td>
                                         <td className="muted">{uc.dist || '—'}</td>
                                         <td className="r">{uc.rateio != null ? `${(uc.rateio * 100).toFixed(2)}%` : '—'}</td>
                                         <td className="r">{n0(uc.consumo)}</td>
-                                        <td className={`r ${geradora ? 'strong' : 'muted'}`} title={geradora ? 'Injeção do medidor da geradora (MeterHub)' : ''}>{(uc.injetado ?? 0) > 0 ? n0(uc.injetado) : '—'}{geradora ? ' ⚡' : ''}</td>
-                                        <td className={`r ${fora ? 'warn-text' : 'strong'}`} title={fora ? '⚠ fora do total da usina (geradora ou glitch de fatura)' : ''}>{n0(uc.compensado)}{fora ? ' ⚠' : ''}</td>
+                                        <td className={`r ${geradora ? 'strong' : 'muted'}`} title={geradora ? 'Injection from the generator meter (MeterHub)' : ''}>{(uc.injetado ?? 0) > 0 ? n0(uc.injetado) : '—'}{geradora ? ' ⚡' : ''}</td>
+                                        <td className={`r ${fora ? 'warn-text' : 'strong'}`} title={fora ? '⚠ outside the plant total (generator or invoice glitch)' : ''}>{n0(uc.compensado)}{fora ? ' ⚠' : ''}</td>
                                         <td className="r muted">{n0(uc.saldo)}</td>
                                       </tr>
                                       {ucOpen && serie && (
@@ -681,12 +681,12 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
                                           <td colSpan={7} style={{ background: '#f7fafb' }}>
                                             <div style={{ padding: '10px 14px' }}>
                                               <div style={{ fontSize: 12, color: '#004b70', fontWeight: 600, marginBottom: 4 }}>
-                                                UC {uc.uc} · {serie.serie.length} {serie.serie.length === 1 ? 'mês' : 'meses'} (API) — <span style={{ color: '#8ba32a' }}>■ compensado</span> · <span style={{ color: '#004b70' }}>— saldo do banco</span>
+                                                UC {uc.uc} · {serie.serie.length} {serie.serie.length === 1 ? 'month' : 'months'} (API) — <span style={{ color: '#8ba32a' }}>■ offset</span> · <span style={{ color: '#004b70' }}>— bank balance</span>
                                               </div>
-                                              {geradora && <p className="hint warn-text" style={{ margin: '0 0 6px' }}>⚡ Esta é a UC <b>geradora</b> (injeta {n0(uc.injetado)} kWh/mês) — o "compensado" vem da fatura e pode conter a injeção ou erros de escaneamento. Não é consumo real.</p>}
+                                              {geradora && <p className="hint warn-text" style={{ margin: '0 0 6px' }}>⚡ This is the <b>generating</b> UC (injects {n0(uc.injetado)} kWh/month) — the "offset" comes from the invoice and may include the injection or scanning errors. It is not real consumption.</p>}
                                               <UCMiniChart serie={serie.serie} inj={rateioUcMes ? serie.serie.map((s) => rateioUcMes.get(uc.uc)?.get(s.mes)?.inj ?? 0) : undefined} />
                                               <table className="uc-mes-table">
-                                                <thead><tr><th>Mês</th><th className="r" title="Rateio (BV) declarado à MeterHub naquele mês — pode mudar mês a mês">Rateio</th><th className="r" title="Créditos alocados a esta UC = rateio × injeção total da usina naquele mês. É quanto a usina 'entrega' de energia pra esta UC.">Créditos aloc.</th><th className="r">Consumo</th><th className="r">Compensado</th><th className="r">Saldo banco</th><th className="r">Δ banco</th><th className="r">Aproveit.</th></tr></thead>
+                                                <thead><tr><th>Month</th><th className="r" title="Allocation (BV) declared to MeterHub that month — can change month to month">Allocation</th><th className="r" title="Credits allocated to this UC = allocation × total plant injection that month. It is how much energy the plant 'delivers' to this UC.">Credits alloc.</th><th className="r">Consumption</th><th className="r">Offset</th><th className="r">Bank balance</th><th className="r">Δ bank</th><th className="r">Utiliz.</th></tr></thead>
                                                 <tbody>
                                                   {serie.serie.map((s, i) => {
                                                     const prev = i > 0 ? serie.serie[i - 1].saldo : null;
@@ -699,8 +699,8 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
                                                     return (
                                                       <tr key={s.mes}>
                                                         <td className="mono">{fmtMes(s.mes)}</td>
-                                                        <td className={`r ${semR ? 'warn-text' : 'muted'}`} title={semR ? '⚠ compensou com rateio 0% neste mês — BV faltando na MeterHub' : ''}>{rMes == null ? '—' : `${(rMes * 100).toFixed(2)}%${semR ? ' ⚠' : ''}`}</td>
-                                                        <td className="r" title={creditos != null ? `${(rMes! * 100).toFixed(2)}% × ${n0(injPlanta)} kWh injetados pela usina` : ''}>{creditos == null ? '—' : n0(creditos)}</td>
+                                                        <td className={`r ${semR ? 'warn-text' : 'muted'}`} title={semR ? '⚠ offset with 0% allocation this month — missing BV in MeterHub' : ''}>{rMes == null ? '—' : `${(rMes * 100).toFixed(2)}%${semR ? ' ⚠' : ''}`}</td>
+                                                        <td className="r" title={creditos != null ? `${(rMes! * 100).toFixed(2)}% × ${n0(injPlanta)} kWh injected by the plant` : ''}>{creditos == null ? '—' : n0(creditos)}</td>
                                                         <td className="r">{n0(s.cons)}</td>
                                                         <td className="r strong">{n0(s.comp)}</td>
                                                         <td className="r muted">{n0(s.saldo)}</td>
@@ -712,7 +712,7 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
                                                           for (let j = i - 1; j >= 0 && serie.serie[j].comp === 0 && serie.serie[j].cons > 0; j--) { z++; consAcum += serie.serie[j].cons; }
                                                           const recup = ap > 1.5 && z >= 1 && s.comp <= consAcum * 1.5;
                                                           const susp = ap > 1.5 && !recup;
-                                                          return <td className={`r ${susp ? 'warn-text' : ''}`} title={susp ? '⚠ valor suspeito — glitch da fatura escaneada ou UC geradora' : recup ? `↩ recuperação: cobre ${z} mês(es) anterior(es) sem fatura` : ''}>{`${(ap * 100).toFixed(0)}%${susp ? ' ⚠' : recup ? ' ↩' : ''}`}</td>;
+                                                          return <td className={`r ${susp ? 'warn-text' : ''}`} title={susp ? '⚠ suspicious value — scanned invoice glitch or generating UC' : recup ? `↩ recovery: covers ${z} prior month(s) with no invoice` : ''}>{`${(ap * 100).toFixed(0)}%${susp ? ' ⚠' : recup ? ' ↩' : ''}`}</td>;
                                                         })()}
                                                       </tr>
                                                     );
@@ -733,18 +733,18 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
                                   <td></td>
                                   <td className="r muted">{(dDet.rateioPct != null ? `${(dDet.rateioPct * 100).toFixed(0)}%` : '')}</td>
                                   <td className="r">{n0(dDet.consumo)}</td>
-                                  <td className="r strong" title="Injeção total medida na MeterHub (medidor da geradora)">{n0(dDet.ucs.reduce((s, u) => s + (u.injetado ?? 0), 0))} ⚡</td>
+                                  <td className="r strong" title="Total injection measured in MeterHub (generator meter)">{n0(dDet.ucs.reduce((s, u) => s + (u.injetado ?? 0), 0))} ⚡</td>
                                   <td className="r strong">{n0(dDet.compensado)}</td>
                                   <td></td>
                                 </tr>
                                 {limDet.excl > 0 && (
                                   <tr className="uc-total limpo">
-                                    <td>Σ Limpo · sem {limDet.excl} UC (geradora/glitch)</td>
+                                    <td>Σ Clean · without {limDet.excl} UC (generator/glitch)</td>
                                     <td></td><td></td>
                                     <td className="r">{n0(limDet.consumo)}</td>
                                     <td className="r muted">—</td>
                                     <td className="r strong">{n0(limDet.compensado)} ✓</td>
-                                    <td className="r muted">aprov. {(limDet.aproveit * 100).toFixed(0)}%</td>
+                                    <td className="r muted">util. {(limDet.aproveit * 100).toFixed(0)}%</td>
                                   </tr>
                                 )}
                               </tfoot>
@@ -762,8 +762,8 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
       </div>
 
       <footer className="foot">
-        Fonte: <b>Base MeterHub</b> (rateio + medição por UC). O aproveitamento &gt;100% indica uso do saldo de créditos acumulado no mês —
-        por isso o perfComp confiável precisa da série mensal + injeção da UC geradora (via API). Próximo: puxar a injeção da API por usina e a série longa.
+        Source: <b>MeterHub Base</b> (allocation + per-UC metering). Utilization &gt;100% indicates use of the credit balance accumulated in the month —
+        that is why reliable perfComp needs the monthly series + generating-UC injection (via API). Next: pull injection from the API per plant and the long series.
       </footer>
     </>
   );
@@ -772,7 +772,7 @@ export default function CompensacaoPanel({ irParaUsina, alvo }: { irParaUsina?: 
 function CompTh({ k, sort, on, r, title, children }: { k: CompSortKey; sort: { key: CompSortKey; dir: 'asc' | 'desc' }; on: (k: CompSortKey) => void; r?: boolean; title?: string; children: ReactNode }) {
   const ativo = sort.key === k;
   return (
-    <th className={`${r ? 'r ' : ''}th-sort${ativo ? ' on' : ''}`} onClick={() => on(k)} title={title ?? 'Ordenar'}>
+    <th className={`${r ? 'r ' : ''}th-sort${ativo ? ' on' : ''}`} onClick={() => on(k)} title={title ?? 'Sort'}>
       {children}<span className="th-arrow">{ativo ? (sort.dir === 'asc' ? ' ▲' : ' ▼') : ' ⇅'}</span>
     </th>
   );

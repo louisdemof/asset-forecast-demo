@@ -13,15 +13,15 @@ function AtualizarANEEL() {
       const d = await r.json();
       setMsg(r.ok ? `✓ ${d.message}` : `⚠ ${d.error}${d.hint ? ' — ' + d.hint : ''}`);
     } catch {
-      setMsg('⚠ Falha de rede ao chamar a função.');
+      setMsg('⚠ Network failure calling the function.');
     }
     setLoading(false);
   };
   return (
     <div className="aneel-refresh">
-      <button className="btn-export" disabled={loading} onClick={go}>{loading ? 'Disparando…' : '🔄 Atualizar tarifas ANEEL agora'}</button>
+      <button className="btn-export" disabled={loading} onClick={go}>{loading ? 'Triggering…' : '🔄 Update ANEEL tariffs now'}</button>
       {msg && <span className={`aneel-refresh-msg ${msg.startsWith('✓') ? 'ok' : 'warn'}`}>{msg}</span>}
-      <span className="aneel-refresh-hint">Atualiza automaticamente toda segunda; este botão força agora.</span>
+      <span className="aneel-refresh-hint">Updates automatically every Monday; this button forces it now.</span>
     </div>
   );
 }
@@ -72,9 +72,9 @@ export default function TarifasTable() {
   }, [usinas, contratos]);
 
   const status = (l: LinhaDisco): { txt: string; cls: string } => {
-    if (l.aneelTusd === undefined) return { txt: 'sem match ANEEL', cls: '' };
+    if (l.aneelTusd === undefined) return { txt: 'no ANEEL match', cls: '' };
     const dif = Math.abs(l.aneelTusd - l.excelTusd) > 1 || Math.abs((l.aneelTe ?? 0) - l.excelTe) > 1;
-    return dif ? { txt: 'ANEEL difere — verificar', cls: 'warn' } : { txt: 'atualizada', cls: 'ok' };
+    return dif ? { txt: 'ANEEL differs — check', cls: 'warn' } : { txt: 'up to date', cls: 'ok' };
   };
 
   const proximos = linhas.filter((l) => l.proximoISO && l.proximoISO >= '2026-07' && l.proximoISO <= '2026-12').length;
@@ -82,10 +82,10 @@ export default function TarifasTable() {
   return (
     <>
       <section className="kpis">
-        <Kpi label="Distribuidoras no portfólio" value={String(linhas.length)} sub={`${usinas.length} usinas`} />
-        <Kpi label="Reajustes até dez/2026" value={String(proximos)} sub="a acompanhar" accent />
-        <Kpi label="Fonte" value="ANEEL" sub={`dados abertos · ${ANEEL_GERADO_EM}`} />
-        <Kpi label="Tarifas conferidas" value={`${linhas.filter((l) => status(l).cls === 'ok').length}/${linhas.length}`} sub="Excel = ANEEL hoje" />
+        <Kpi label="Utilities in the portfolio" value={String(linhas.length)} sub={`${usinas.length} plants`} />
+        <Kpi label="Adjustments through Dec/2026" value={String(proximos)} sub="to track" accent />
+        <Kpi label="Source" value="ANEEL" sub={`open data · ${ANEEL_GERADO_EM}`} />
+        <Kpi label="Tariffs checked" value={`${linhas.filter((l) => status(l).cls === 'ok').length}/${linhas.length}`} sub="Excel = ANEEL today" />
       </section>
 
       <AtualizarANEEL />
@@ -94,13 +94,13 @@ export default function TarifasTable() {
         <table>
           <thead>
             <tr>
-              <th>Distribuidora</th>
-              <th className="r">Usinas</th>
+              <th>Utility</th>
+              <th className="r">Plants</th>
               <th className="r">MWac</th>
               <th className="r">TUSD/TE (Excel)</th>
-              <th className="r">TUSD demanda</th>
+              <th className="r">TUSD demand</th>
               <th className="r">TUSD/TE (ANEEL)</th>
-              <th>Próximo reajuste</th>
+              <th>Next adjustment</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -113,7 +113,7 @@ export default function TarifasTable() {
                   <td className="r muted">{l.nUsinas}</td>
                   <td className="r muted">{l.mwac.toFixed(1)}</td>
                   <td className="r">{l.excelTusd.toFixed(0)} / {l.excelTe.toFixed(0)}</td>
-                  <td className="r" title={l.demandaDisco ? 'usa TUSD C (COPEL/CEEE/ESS/ETO)' : 'usa TUSD G'}>
+                  <td className="r" title={l.demandaDisco ? 'uses TUSD C (COPEL/CEEE/ESS/ETO)' : 'uses TUSD G'}>
                     <b>{(l.demandaDisco ? l.tusdC : l.tusdG).toFixed(1)}</b> <small className="muted">{l.demandaDisco ? 'TUSD C' : 'TUSD G'}</small>
                   </td>
                   <td className="r muted">{l.aneelTusd !== undefined ? `${l.aneelTusd.toFixed(0)} / ${l.aneelTe!.toFixed(0)}` : '—'}</td>
@@ -127,9 +127,9 @@ export default function TarifasTable() {
       </div>
 
       <footer className="foot">
-        Próximo reajuste = fim da vigência da tarifa atual na ANEEL (dado direto da Resolução Homologatória).
-        Ordenado do reajuste mais próximo. "ANEEL difere" sinaliza distribuidoras que reajustaram recentemente —
-        vale conferir/sincronizar no contrato.
+        Next adjustment = end of the current tariff's effective period at ANEEL (taken directly from the Resolução Homologatória).
+        Sorted by the nearest adjustment. "ANEEL differs" flags utilities that adjusted recently —
+        worth checking/syncing in the contract.
       </footer>
     </>
   );

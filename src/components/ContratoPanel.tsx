@@ -24,14 +24,14 @@ function ReceitaMensalUsina({ meses }: { meses: AlocacaoMes[] }) {
   const d = sel != null ? meses[sel] : null;
   return (
     <section className="cbloco mensal-usina">
-      <h5>Receita mensal <span className="muted" style={{ fontWeight: 400 }}>· clique num mês pra detalhar</span></h5>
+      <h5>Monthly revenue <span className="muted" style={{ fontWeight: 400 }}>· click a month to see details</span></h5>
       <table className="mes-table">
-        <thead><tr><th>Mês</th><th>Status</th><th className="r">Energia Final</th><th className="r">Comp.</th><th className="r">Receita</th></tr></thead>
+        <thead><tr><th>Month</th><th>Status</th><th className="r">Final Energy</th><th className="r">Comp.</th><th className="r">Revenue</th></tr></thead>
         <tbody>
           {meses.map((m, i) => (
             <tr key={m.mes} className={`clickable ${sel === i ? 'on' : ''}`} onClick={() => setSel(sel === i ? null : i)}>
               <td className="strong">{mmYY(m.mes)}</td>
-              <td>{m.status === 'COD' ? <span className="badge ok">COD</span> : <span className="badge">const.</span>}</td>
+              <td>{m.status === 'COD' ? <span className="badge ok">COD</span> : <span className="badge">const.</span>}</td>{/* 'const.' = construction, display abbrev */}
               <td className="r muted">{mwh(m.energiaFinal)}</td>
               <td className="r">{(m.perfComp * 100).toFixed(0)}%</td>
               <td className="r strong">{brl(m.receitaTotal)}</td>
@@ -44,17 +44,17 @@ function ReceitaMensalUsina({ meses }: { meses: AlocacaoMes[] }) {
           <div className="mes-detalhe-h"><b>{mmYY(d.mes)}</b> · {d.status}</div>
           <div className="mes-grid">
             <span>P50<b>{mwh(d.p50)}</b></span>
-            <span>Perf. Oper<b>{(d.perfOper * 100).toFixed(0)}%</b></span>
-            <span>Perf. Comp<b>{(d.perfComp * 100).toFixed(0)}%</b></span>
-            <span>Energia Final<b>{mwh(d.energiaFinal)}</b></span>
-            <span>Base de Cálculo<b>{d.base != null ? `${d.base.toFixed(0)} R$/MWh` : '—'}</b></span>
-            <span>Receita Bruta<b>{brl(d.receitaBruta)}</b></span>
-            <span>Demanda UFV<b>{brl(d.demanda)}</b></span>
-            <span>Loc. Equipamentos<b>{brl(d.equipamentos)}</b></span>
+            <span>Oper. Perf<b>{(d.perfOper * 100).toFixed(0)}%</b></span>
+            <span>Comp. Perf<b>{(d.perfComp * 100).toFixed(0)}%</b></span>
+            <span>Final Energy<b>{mwh(d.energiaFinal)}</b></span>
+            <span>Calculation Base<b>{d.base != null ? `${d.base.toFixed(0)} R$/MWh` : '—'}</b></span>
+            <span>Gross Revenue<b>{brl(d.receitaBruta)}</b></span>
+            <span>PV Demand<b>{brl(d.demanda)}</b></span>
+            <span>Equipment Lease<b>{brl(d.equipamentos)}</b></span>
             <span>O&amp;M<b>{brl(d.om)}</b></span>
-            <span>Imóvel<b>{brl(d.imovel)}</b></span>
-            <span>Guarda-Chuva<b>{brl(d.guardaChuva)}</b></span>
-            <span className="rt">Receita Total<b>{brl(d.receitaTotal)}</b></span>
+            <span>Property<b>{brl(d.imovel)}</b></span>
+            <span>Umbrella<b>{brl(d.guardaChuva)}</b></span>
+            <span className="rt">Total Revenue<b>{brl(d.receitaTotal)}</b></span>
           </div>
         </div>
       )}
@@ -63,10 +63,10 @@ function ReceitaMensalUsina({ meses }: { meses: AlocacaoMes[] }) {
 }
 
 const LINHAS: { key: 'equipamentos' | 'om' | 'imovel' | 'guardaChuva'; label: string; cor: string }[] = [
-  { key: 'equipamentos', label: 'Loc. Equipamentos', cor: '#004b70' },
+  { key: 'equipamentos', label: 'Equipment Lease', cor: '#004b70' },
   { key: 'om', label: 'O&M', cor: '#6692a8' },
-  { key: 'imovel', label: 'Imóvel', cor: '#9bb8c6' },
-  { key: 'guardaChuva', label: 'Guarda-Chuva', cor: '#c6da38' },
+  { key: 'imovel', label: 'Property', cor: '#9bb8c6' },
+  { key: 'guardaChuva', label: 'Umbrella', cor: '#c6da38' },
 ];
 
 const TIPOS: ClienteTipo[] = ['TELMO', 'TELCO', 'NEXUS', 'LOGIX', 'SOLARA', 'VERTA', 'BANCOR', 'HIDRUS', 'PETRAX', 'PADRAO'];
@@ -130,16 +130,16 @@ export default function ContratoPanel({ usina }: { usina: string }) {
     <div className="cpanel">
       <div className="cpanel-header">
         <h3>{usina} <span className="ctipo">{contrato.clienteTipo}</span></h3>
-        <span className="muted">{contrato.disco} · {contrato.cliente || 'sem cliente'}</span>
+        <span className="muted">{contrato.disco} · {contrato.cliente || 'no client'}</span>
       </div>
 
       <div className="cpanel-grid">
         {/* ==== ESQUERDA: o objeto Contrato (inputs) ==== */}
         <div className="cpanel-form">
           <section className="cbloco">
-            <h5>Contrato</h5>
-            <Campo label="Cliente"><input value={contrato.cliente} onChange={(e) => set({ cliente: e.target.value })} /></Campo>
-            <Campo label="Tipo de cliente (fórmula da Base)">
+            <h5>Contract</h5>
+            <Campo label="Client"><input value={contrato.cliente} onChange={(e) => set({ cliente: e.target.value })} /></Campo>
+            <Campo label="Client type (Base formula)">
               <select value={contrato.clienteTipo} onChange={(e) => set({ clienteTipo: e.target.value as ClienteTipo })}>
                 {TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
@@ -147,38 +147,38 @@ export default function ContratoPanel({ usina }: { usina: string }) {
             {(() => {
               const r = REGRAS_CLIENTE[contrato.clienteTipo];
               return (
-                <div className="regra-cliente" title="Regras que se aplicam ao trocar de cliente (troca de titularidade)">
-                  <span className={`metodo-chip modelo-${r.modelo}`}>{r.modelo === 'AR' ? 'Autoconsumo Remoto' : 'Geração Compart.'}</span>
-                  <span className="regra-txt">base: <b className="mono">{r.descricaoBase}</b> · resíduo: <b>{r.residual === 'guardaChuva' ? 'Guarda-Chuva' : 'O&M'}</b></span>
+                <div className="regra-cliente" title="Rules that apply when switching clients (change of ownership)">
+                  <span className={`metodo-chip modelo-${r.modelo}`}>{r.modelo === 'AR' ? 'Remote Self-Consumption' : 'Shared Generation'}</span>
+                  <span className="regra-txt">base: <b className="mono">{r.descricaoBase}</b> · residual: <b>{r.residual === 'guardaChuva' ? 'Umbrella' : 'O&M'}</b></span>
                 </div>
               );
             })()}
-            <Campo label="Distribuidora"><input value={contrato.disco} onChange={(e) => set({ disco: e.target.value })} /></Campo>
-            <Campo label="Potência (MWac)"><input type="number" step={0.1} value={contrato.potMWac} onChange={(e) => set({ potMWac: +e.target.value || 0 })} /></Campo>
-            <Campo label="Potência (MWp)"><input type="number" step={0.1} value={contrato.potMWp ?? 0} onChange={(e) => set({ potMWp: +e.target.value || 0 })} /></Campo>
-            <Campo label="Desconto (%)"><input type="number" step={0.1} value={+(contrato.desconto * 100).toFixed(2)} onChange={(e) => set({ desconto: (+e.target.value || 0) / 100 })} /></Campo>
-            <Campo label="Base de cálculo"><input value={com?.baseCalculo ?? ''} placeholder="TE+TUSD" onChange={(e) => setCom({ baseCalculo: e.target.value })} /></Campo>
-            <Campo label="Nível de Risco (1–3)"><input type="number" step={1} min={1} max={3} value={contrato.nivelRisco ?? ''} onChange={(e) => set({ nivelRisco: +e.target.value || 0 })} /></Campo>
+            <Campo label="Utility"><input value={contrato.disco} onChange={(e) => set({ disco: e.target.value })} /></Campo>
+            <Campo label="Capacity (MWac)"><input type="number" step={0.1} value={contrato.potMWac} onChange={(e) => set({ potMWac: +e.target.value || 0 })} /></Campo>
+            <Campo label="Capacity (MWp)"><input type="number" step={0.1} value={contrato.potMWp ?? 0} onChange={(e) => set({ potMWp: +e.target.value || 0 })} /></Campo>
+            <Campo label="Discount (%)"><input type="number" step={0.1} value={+(contrato.desconto * 100).toFixed(2)} onChange={(e) => set({ desconto: (+e.target.value || 0) / 100 })} /></Campo>
+            <Campo label="Calculation base"><input value={com?.baseCalculo ?? ''} placeholder="TE+TUSD" onChange={(e) => setCom({ baseCalculo: e.target.value })} /></Campo>
+            <Campo label="Risk Level (1–3)"><input type="number" step={1} min={1} max={3} value={contrato.nivelRisco ?? ''} onChange={(e) => set({ nivelRisco: +e.target.value || 0 })} /></Campo>
           </section>
 
           <section className="cbloco">
-            <h5>Tarifas <small>(R$/MWh)</small></h5>
+            <h5>Tariffs <small>(R$/MWh)</small></h5>
             <div className="aneel-bar">
               {reajuste ? (
                 <>
                   <span className="aneel-badge">🔗 ANEEL</span>
                   <span className="aneel-info">
-                    Próximo reajuste: <b>{reajuste.proximo}</b> · vigente desde {reajuste.vigente}
+                    Next adjustment: <b>{reajuste.proximo}</b> · in effect since {reajuste.vigente}
                     <small title={reajuste.resolucao}> · {reajuste.resolucao.replace('RESOLUÇÃO HOMOLOGATÓRIA', 'Res.').slice(0, 22)}…</small>
                   </span>
                   {aneelTar && (
                     <button className="reset-link" onClick={() => setTar({ tusd: +aneelTar.tusd.toFixed(2), te: +aneelTar.te.toFixed(2) })}>
-                      ⤵ sincronizar TUSD/TE da ANEEL ({aneelTar.tusd.toFixed(0)}/{aneelTar.te.toFixed(0)})
+                      ⤵ sync TUSD/TE from ANEEL ({aneelTar.tusd.toFixed(0)}/{aneelTar.te.toFixed(0)})
                     </button>
                   )}
                 </>
               ) : (
-                <span className="aneel-info muted">DISCO sem match na base ANEEL</span>
+                <span className="aneel-info muted">Utility with no match in ANEEL database</span>
               )}
             </div>
             <Campo label="TUSD"><input type="number" step={1} value={+tar.tusd.toFixed(2)} onChange={(e) => setTar({ tusd: +e.target.value || 0 })} /></Campo>
@@ -190,22 +190,22 @@ export default function ContratoPanel({ usina }: { usina: string }) {
           </section>
 
           <section className="cbloco">
-            <h5>Comercial</h5>
+            <h5>Commercial</h5>
             <Campo label="Status">
               <select value={com?.status ?? ''} onChange={(e) => setCom({ status: e.target.value })}>
-                <option value="">—</option><option value="Quente">Quente</option><option value="Frio">Frio</option>
+                <option value="">—</option><option value="Quente">Hot</option><option value="Frio">Cold</option>
               </select>
             </Campo>
             <Campo label="Pipeline status"><input value={com?.pipelineStatus ?? ''} onChange={(e) => setCom({ pipelineStatus: e.target.value })} /></Campo>
             <Campo label="Offtaker (original)"><input value={com?.offtakerOriginal ?? ''} onChange={(e) => setCom({ offtakerOriginal: e.target.value })} /></Campo>
-            <Campo label="Offtaker (novo)"><input value={com?.novoOfftaker ?? ''} onChange={(e) => setCom({ novoOfftaker: e.target.value })} /></Campo>
-            <Campo label="Prazo do contrato"><input value={com?.prazoContrato ?? ''} placeholder="Until 2045" onChange={(e) => setCom({ prazoContrato: e.target.value })} /></Campo>
+            <Campo label="Offtaker (new)"><input value={com?.novoOfftaker ?? ''} onChange={(e) => setCom({ novoOfftaker: e.target.value })} /></Campo>
+            <Campo label="Contract term"><input value={com?.prazoContrato ?? ''} placeholder="Until 2045" onChange={(e) => setCom({ prazoContrato: e.target.value })} /></Campo>
             {(() => {
               const f = fimContrato(com ?? { prazoContrato: '', signingDate: '', inicioCompensacao: '' });
-              const rot = f.tipo === 'explícito' ? 'exato' : f.tipo === 'estimada' ? 'estimada' : 'sem data';
+              const rot = f.tipo === 'explícito' ? 'exact' : f.tipo === 'estimada' ? 'estimated' : 'no date';
               return (
-                <Campo label="Fim do contrato (derivado)">
-                  <div className="derivado" title={`${f.detalhe} · base: coluna "Contract term" da aba Comercial. Estimada = Início da compensação + N anos (confirmar marco com o time).`}>
+                <Campo label="Contract end (derived)">
+                  <div className="derivado" title={`${f.detalhe} · basis: "Contract term" column of the Commercial tab. Estimated = Compensation start + N years (confirm milestone with the team).`}>
                     <b>{f.fim ? new Date(f.fim + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}</b>
                     <span className={`fimtag ${f.tipo}`}>{rot}</span>
                   </div>
@@ -213,68 +213,68 @@ export default function ContratoPanel({ usina }: { usina: string }) {
               );
             })()}
             <Campo label="Take or Pay (%)"><input type="number" step={1} value={+((com?.takeOrPay ?? 0) * 100).toFixed(0)} onChange={(e) => setCom({ takeOrPay: (+e.target.value || 0) / 100 })} /></Campo>
-            <Campo label="Ramp up"><input value={com?.rampUp ?? ''} placeholder="3 months" onChange={(e) => setCom({ rampUp: e.target.value })} /></Campo>
+            <Campo label="Ramp up"><input value={com?.rampUp ?? ''} placeholder="3 months" onChange={(e) => setCom({ rampUp: e.target.value })} /></Campo>{/* Take or Pay label already English */}
           </section>
 
           <section className="cbloco">
-            <h5>Datas</h5>
-            <Campo label="Energização"><input type="date" value={contrato.energizacao ?? ''} onChange={(e) => set({ energizacao: e.target.value })} /></Campo>
-            <Campo label="COD (aba COD)"><input type="date" value={contrato.cod ?? ''} onChange={(e) => set({ cod: e.target.value })} /></Campo>
-            <Campo label={`COD (comercial)${com?.codDate && contrato.cod && com.codDate.slice(0, 10) !== contrato.cod.slice(0, 10) ? ' ⚠ diverge' : ''}`}>
+            <h5>Dates</h5>
+            <Campo label="Energization"><input type="date" value={contrato.energizacao ?? ''} onChange={(e) => set({ energizacao: e.target.value })} /></Campo>
+            <Campo label="COD (COD tab)"><input type="date" value={contrato.cod ?? ''} onChange={(e) => set({ cod: e.target.value })} /></Campo>
+            <Campo label={`COD (commercial)${com?.codDate && contrato.cod && com.codDate.slice(0, 10) !== contrato.cod.slice(0, 10) ? ' ⚠ mismatch' : ''}`}>
               <input type="date" value={com?.codDate ?? ''} onChange={(e) => setCom({ codDate: e.target.value })} />
             </Campo>
-            <Campo label="1º Faturamento"><input type="date" value={contrato.faturamento ?? ''} onChange={(e) => set({ faturamento: e.target.value })} /></Campo>
+            <Campo label="1st Invoicing"><input type="date" value={contrato.faturamento ?? ''} onChange={(e) => set({ faturamento: e.target.value })} /></Campo>
             <Campo label="Signing date"><input type="date" value={com?.signingDate ?? ''} onChange={(e) => setCom({ signingDate: e.target.value })} /></Campo>
-            <Campo label="Troca de titularidade"><input type="date" value={com?.trocaTitularidade ?? ''} onChange={(e) => setCom({ trocaTitularidade: e.target.value })} /></Campo>
-            <Campo label="Início da compensação"><input type="date" value={com?.inicioCompensacao ?? ''} onChange={(e) => setCom({ inicioCompensacao: e.target.value })} /></Campo>
+            <Campo label="Change of ownership"><input type="date" value={com?.trocaTitularidade ?? ''} onChange={(e) => setCom({ trocaTitularidade: e.target.value })} /></Campo>
+            <Campo label="Compensation start"><input type="date" value={com?.inicioCompensacao ?? ''} onChange={(e) => setCom({ inicioCompensacao: e.target.value })} /></Campo>
           </section>
 
           <section className="cbloco">
-            <h5>Cadeia de energia</h5>
-            <Campo label="Perf. Operacional (%) — 1−Σperdas">
+            <h5>Energy chain</h5>
+            <Campo label="Operational Perf. (%) — 1−Σlosses">
               <input type="number" step={1} value={+(perfOperMostrado * 100).toFixed(1)} onChange={(e) => set({ perfOperOverride: (+e.target.value || 0) / 100 })} />
             </Campo>
-            <Campo label={contrato.rampaAuto ? 'Perf. Compensação (%) — rampa auto' : 'Perf. Compensação (%) — MeterHub'}>
+            <Campo label={contrato.rampaAuto ? 'Compensation Perf. (%) — auto ramp' : 'Compensation Perf. (%) — MeterHub'}>
               <input type="number" step={1} disabled={!!contrato.rampaAuto} value={+(perfCompMostrado * 100).toFixed(1)} onChange={(e) => set({ perfCompOverride: (+e.target.value || 0) / 100 })} />
             </Campo>
             {temOverride && (
-              <button className="reset-link" onClick={() => set({ perfOperOverride: undefined, perfCompOverride: undefined })}>↺ voltar aos valores mensais do Forecast</button>
+              <button className="reset-link" onClick={() => set({ perfOperOverride: undefined, perfCompOverride: undefined })}>↺ back to monthly Forecast values</button>
             )}
             <div className="energia-chain">
               <span className="ec-step"><b>{mwh(efet.p50)}</b><small>P50</small></span>
               <span className="ec-op">×{(perfOperMostrado * 100).toFixed(0)}%</span>
               <span className="ec-op">×{(perfCompMostrado * 100).toFixed(0)}%</span>
-              <span className="ec-step accent"><b>{mwh(efet.energiaFinal)}</b><small>Energia Final</small></span>
+              <span className="ec-step accent"><b>{mwh(efet.energiaFinal)}</b><small>Final Energy</small></span>
             </div>
           </section>
 
           {contrato.rampa && contrato.rampa.length > 0 && (
             <section className="cbloco">
-              <h5>Rampa & Take-or-Pay <small>(sobre a injeção, específica do contrato)</small></h5>
+              <h5>Ramp & Take-or-Pay <small>(on injection, contract-specific)</small></h5>
               <p className="hint" style={{ marginTop: 0 }}>
-                ✓ <b>Já preenchida da aba Comercial</b> (linha 37+) — curva do offtaker <b>{com?.novoOfftaker || '—'}</b>. mês 1 = <b>Início da Compensação</b> ({com?.inicioCompensacao || '—'}).
-                A rampa incide sobre a <b>injeção</b> (não a compensação). <b>Edite só</b> se este contrato tiver uma rampa diferente (é específica do contrato).
+                ✓ <b>Already filled from the Commercial tab</b> (row 37+) — curve of offtaker <b>{com?.novoOfftaker || '—'}</b>. month 1 = <b>Compensation Start</b> ({com?.inicioCompensacao || '—'}).
+                The ramp applies to <b>injection</b> (not compensation). <b>Only edit</b> if this contract has a different ramp (it is contract-specific).
               </p>
               <div className="rampa-bars">
                 {contrato.rampa.map((f, i) => (
-                  <div className="rampa-col" key={i} title={`Mês ${i + 1}: ${(f * 100).toFixed(0)}%`}>
+                  <div className="rampa-col" key={i} title={`Month ${i + 1}: ${(f * 100).toFixed(0)}%`}>
                     <div className="rampa-fill" style={{ height: `${Math.max(2, f * 100)}%` }} />
                     <span className="rampa-m">{i + 1}</span>
                   </div>
                 ))}
               </div>
-              <Campo label="Modo take-or-pay">
+              <Campo label="Take-or-pay mode">
                 <select value={contrato.topModo ?? 'off'} onChange={(e) => set({ topModo: e.target.value === 'off' ? undefined : (e.target.value as 'substitui' | 'max') })}>
-                  <option value="off">desligado (energia = compensação)</option>
-                  <option value="substitui">substitui — durante a rampa, energia = rampa% × injeção</option>
-                  <option value="max">máx — energia = max(compensação, rampa% × injeção)</option>
+                  <option value="off">off (energy = compensation)</option>
+                  <option value="substitui">replace — during the ramp, energy = ramp% × injection</option>
+                  <option value="max">max — energy = max(compensation, ramp% × injection)</option>
                 </select>
               </Campo>
               <p className="hint" style={{ margin: '2px 0 6px' }}>
-                Injeção é <b>manual</b> (Geração Compartilhada): preencha o MWh injetado de cada mês pela <b>fatura da distribuidora</b> recebida pelo cliente. Em branco = usa P50 × perfOper como estimativa.
+                Injection is <b>manual</b> (Shared Generation): fill in each month's injected MWh from the <b>utility invoice</b> received by the client. Blank = uses P50 × perfOper as an estimate.
               </p>
               <table className="rampa-t">
-                <thead><tr><th>Mês</th><th className="r">Rampa %</th><th className="r">Injeção MWh <small>(fatura)</small></th><th className="r">Faturável</th></tr></thead>
+                <thead><tr><th>Month</th><th className="r">Ramp %</th><th className="r">Injection MWh <small>(invoice)</small></th><th className="r">Billable</th></tr></thead>
                 <tbody>
                   {contrato.rampa.map((f, i) => {
                     const mesCal = addMeses(com?.inicioCompensacao, i); // yyyy-mm
@@ -284,7 +284,7 @@ export default function ContratoPanel({ usina }: { usina: string }) {
                     const faturavel = f * injUsada;
                     return (
                       <tr key={i}>
-                        <td>{mesCal ? mmYY(mesCal) : `mês ${i + 1}`}</td>
+                        <td>{mesCal ? mmYY(mesCal) : `month ${i + 1}`}</td>
                         <td className="r">
                           <input className="rampa-in" type="number" step={5} min={0} max={100} value={+(f * 100).toFixed(0)}
                             onChange={(e) => { const nova = [...contrato.rampa!]; nova[i] = Math.max(0, Math.min(100, +e.target.value || 0)) / 100; set({ rampa: nova }); }} />
@@ -306,47 +306,47 @@ export default function ContratoPanel({ usina }: { usina: string }) {
                 </tbody>
               </table>
               <div className="rampa-actions">
-                <button className="rampa-add" onClick={() => set({ rampa: [...contrato.rampa!, 1] })}>+ mês</button>
-                {contrato.rampa.length > 1 && <button className="rampa-add" onClick={() => set({ rampa: contrato.rampa!.slice(0, -1) })}>− mês</button>}
-                <span className="hint" style={{ margin: 0 }}>{contrato.rampa.length} meses até 100% · coluna "Faturável" = rampa% × injeção (só nos meses de rampa, com take-or-pay ligado)</span>
+                <button className="rampa-add" onClick={() => set({ rampa: [...contrato.rampa!, 1] })}>+ month</button>
+                {contrato.rampa.length > 1 && <button className="rampa-add" onClick={() => set({ rampa: contrato.rampa!.slice(0, -1) })}>− month</button>}
+                <span className="hint" style={{ margin: 0 }}>{contrato.rampa.length} months to 100% · "Billable" column = ramp% × injection (only in ramp months, with take-or-pay on)</span>
               </div>
             </section>
           )}
 
           <section className="cbloco">
-            <h5>Repartição de custos <small>(1 linha = residual)</small></h5>
+            <h5>Cost split <small>(1 line = residual)</small></h5>
             <div className="cost-lines">
-              <div className="cost-head"><span>Linha</span><span>Modo</span><span>Valor fixo</span></div>
+              <div className="cost-head"><span>Line</span><span>Mode</span><span>Fixed value</span></div>
               {LINHAS.map((l) => {
                 const linha = contrato[l.key];
                 return (
                   <div className="cost-row" key={l.key}>
                     <span className="cost-name"><i style={{ background: l.cor }} />{l.label}</span>
                     <select value={linha.modo} onChange={(e) => setLinha(l.key, { modo: e.target.value as ModoCusto })}>
-                      <option value="fixo">fixo</option><option value="residual">residual</option><option value="zero">zero</option>
+                      <option value="fixo">fixed</option><option value="residual">residual</option><option value="zero">zero</option>
                     </select>
                     <input type="number" disabled={linha.modo !== 'fixo'} value={linha.modo === 'fixo' ? Math.round(linha.valorFixo) : ''} onChange={(e) => setLinha(l.key, { valorFixo: +e.target.value || 0 })} />
                   </div>
                 );
               })}
             </div>
-            {!temResidual && <p className="hint warn-text">⚠ Defina uma linha como "residual".</p>}
+            {!temResidual && <p className="hint warn-text">⚠ Set one line as "residual".</p>}
           </section>
 
           <section className="cbloco">
-            <h5>Riscos</h5>
-            <textarea className="riscos-input" value={com?.riscos ?? ''} placeholder="Riscos do contrato…" onChange={(e) => setCom({ riscos: e.target.value })} />
+            <h5>Risks</h5>
+            <textarea className="riscos-input" value={com?.riscos ?? ''} placeholder="Contract risks…" onChange={(e) => setCom({ riscos: e.target.value })} />
           </section>
 
           <section className="cbloco">
-            <h5>Observações (COD)</h5>
-            <textarea className="riscos-input" value={contrato.observacoes ?? ''} placeholder="Observações operacionais…" onChange={(e) => set({ observacoes: e.target.value })} />
+            <h5>Notes (COD)</h5>
+            <textarea className="riscos-input" value={contrato.observacoes ?? ''} placeholder="Operational notes…" onChange={(e) => set({ observacoes: e.target.value })} />
           </section>
         </div>
 
         {/* ==== DIREITA: resultado ==== */}
         <div className="cpanel-result">
-          <h4>Alocação da receita (ano)</h4>
+          <h4>Revenue allocation (year)</h4>
           <div className="alloc-bar">
             {LINHAS.map((l) => {
               const v = resumo[l.key];
@@ -368,11 +368,11 @@ export default function ContratoPanel({ usina }: { usina: string }) {
                   </tr>
                 );
               })}
-              <tr className="total"><td>Receita Total</td><td className="r">{brl(resumo.receitaTotal)}</td><td className="r muted">100%</td></tr>
+              <tr className="total"><td>Total Revenue</td><td className="r">{brl(resumo.receitaTotal)}</td><td className="r muted">100%</td></tr>
             </tbody>
           </table>
           <div className="recon">
-            <span>vs Forecast oficial ({brl(receitaForecastAno)})</span>
+            <span>vs official Forecast ({brl(receitaForecastAno)})</span>
             <b className={Math.abs(difForecast) < Math.max(1, Math.abs(receitaForecastAno)) * 0.005 ? 'ok-text' : 'warn-text'}>{difForecast >= 0 ? '+' : ''}{brl(difForecast)}</b>
           </div>
           <div className="recon">
@@ -392,25 +392,25 @@ export default function ContratoPanel({ usina }: { usina: string }) {
             );
             return (
               <div className="diverge">
-                <div className="diverge-h">Por que diverge do Forecast? <span className="muted">— motor vs Excel</span></div>
+                <div className="diverge-h">Why does it diverge from the Forecast? <span className="muted">— engine vs Excel</span></div>
                 <table className="diverge-t"><tbody>
-                  <tr className="diverge-head"><td>componente</td><td className="r">motor</td><td className="r">Excel</td><td className="r">impacto</td></tr>
-                  {linha('Base de Cálculo (R$/MWh)', baseEng.toFixed(0), baseXls ? baseXls.toFixed(0) : '—', dBase)}
-                  {linha('Demanda UFV (ano)', brl(demandaAno), demXls ? brl(demXls) : '—', dDem)}
-                  <tr className="diverge-resid"><td>Ajuste manual / cap no Excel</td><td /><td /><td className={`r ${Math.abs(resid) < 1 ? 'muted' : resid >= 0 ? 'ok-text' : 'warn-text'}`}>{Math.abs(resid) < 1 ? '—' : `${resid >= 0 ? '+' : ''}${brl(resid)}`}</td></tr>
+                  <tr className="diverge-head"><td>component</td><td className="r">engine</td><td className="r">Excel</td><td className="r">impact</td></tr>
+                  {linha('Calculation Base (R$/MWh)', baseEng.toFixed(0), baseXls ? baseXls.toFixed(0) : '—', dBase)}
+                  {linha('PV Demand (year)', brl(demandaAno), demXls ? brl(demXls) : '—', dDem)}
+                  <tr className="diverge-resid"><td>Manual adjustment / cap in Excel</td><td /><td /><td className={`r ${Math.abs(resid) < 1 ? 'muted' : resid >= 0 ? 'ok-text' : 'warn-text'}`}>{Math.abs(resid) < 1 ? '—' : `${resid >= 0 ? '+' : ''}${brl(resid)}`}</td></tr>
                 </tbody></table>
-                <p className="diverge-nota">Somando os impactos = a diferença total. "Ajuste manual/cap" = overrides que o Excel tem e o motor (canônico) não replica.</p>
+                <p className="diverge-nota">Summing the impacts = the total difference. "Manual adjustment/cap" = overrides that Excel has and the (canonical) engine does not replicate.</p>
               </div>
             );
           })()}
 
-          <h4 style={{ marginTop: 18 }}>Indicadores (calculados)</h4>
+          <h4 style={{ marginTop: 18 }}>Indicators (calculated)</h4>
           <table className="alloc-table">
             <tbody>
-              <tr><td>Tarifa GD</td><td className="r">{tarifaGD.toFixed(2)} R$/MWh</td></tr>
-              <tr><td>Demanda UFV (ano)</td><td className="r">{brl(demandaAno)}</td></tr>
-              <tr><td>Custo Cativo (ref.)</td><td className="r">{brl(custoCativo)}</td></tr>
-              <tr><td>Energia Final (ano)</td><td className="r">{mwh(energiaFinalAno)}</td></tr>
+              <tr><td>GD Tariff</td><td className="r">{tarifaGD.toFixed(2)} R$/MWh</td></tr>
+              <tr><td>PV Demand (year)</td><td className="r">{brl(demandaAno)}</td></tr>
+              <tr><td>Captive Cost (ref.)</td><td className="r">{brl(custoCativo)}</td></tr>
+              <tr><td>Final Energy (year)</td><td className="r">{mwh(energiaFinalAno)}</td></tr>
             </tbody>
           </table>
 

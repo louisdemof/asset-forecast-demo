@@ -55,20 +55,20 @@ export default function ValidacaoBar() {
   return (
     <div className={`valbar ${validado ? 'valbar--ok' : 'valbar--pend'}`}>
       <label className="valbar-mes">
-        Validação do forecast
+        Forecast validation
         <input type="month" value={mesUI} onChange={(e) => setMesUI(e.target.value)} />
       </label>
       <span className="valbar-status">
         {validado
-          ? <>✓ <b>Validado</b>{atual?.metricas && typeof atual.metricas.receitaAnualEngine === 'number' && <> · R$ {(atual.metricas.receitaAnualEngine as number).toLocaleString('pt-BR')}/ano</>} · {fmtData(atual?.validated_at ?? null)}</>
-          : <>⏳ <b>Pendente</b> — R$ {snapshot.receitaAnualEngine.toLocaleString('pt-BR')}/ano · {snapshot.nUsinas} usinas no snapshot</>}
+          ? <>✓ <b>Validated</b>{atual?.metricas && typeof atual.metricas.receitaAnualEngine === 'number' && <> · R$ {(atual.metricas.receitaAnualEngine as number).toLocaleString('pt-BR')}/year</>} · {fmtData(atual?.validated_at ?? null)}</>
+          : <>⏳ <b>Pending</b> — R$ {snapshot.receitaAnualEngine.toLocaleString('pt-BR')}/year · {snapshot.nUsinas} plants in snapshot</>}
       </span>
       {podeValidar && (
         validado
-          ? <button className="valbar-btn ghost" disabled={busy} onClick={reverter}>Reabrir</button>
-          : <button className="valbar-btn" disabled={busy} onClick={validar}>{busy ? '…' : '✓ Validar mês'}</button>
+          ? <button className="valbar-btn ghost" disabled={busy} onClick={reverter}>Reopen</button>
+          : <button className="valbar-btn" disabled={busy} onClick={validar}>{busy ? '…' : '✓ Validate month'}</button>
       )}
-      {!podeValidar && <span className="valbar-hint">(sem permissão para validar)</span>}
+      {!podeValidar && <span className="valbar-hint">(no permission to validate)</span>}
       {erro && <span className="valbar-erro">{erro}</span>}
     </div>
   );

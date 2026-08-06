@@ -40,7 +40,7 @@ export async function updateUser(
   id: string,
   patch: { role_id?: string | null; department_id?: string | null; is_active?: boolean; cargo?: string | null; nome?: string },
 ): Promise<void> {
-  if (!supabase) throw new Error('Supabase não configurado');
+  if (!supabase) throw new Error('Supabase not configured');
   const { error } = await supabase.from('profiles').update(patch).eq('id', id);
   if (error) throw error;
 }
@@ -66,7 +66,7 @@ export async function provisionUser(input: {
 }): Promise<{ id: string }> {
   const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
   const anon = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
-  if (!url || !anon) throw new Error('Supabase não configurado');
+  if (!url || !anon) throw new Error('Supabase not configured');
   const tmp = createClient(url, anon, { auth: { persistSession: false, autoRefreshToken: false } });
   const { data, error } = await tmp.auth.signUp({ email: input.email.trim().toLowerCase(), password: input.senha });
   if (error) throw error;

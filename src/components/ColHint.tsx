@@ -22,7 +22,7 @@ export function ColHint({ label, titulo, oque, comoLer }: {
         ref={ref}
         type="button"
         className="colhint-i"
-        aria-label={`Ajuda: ${titulo}`}
+        aria-label={`Help: ${titulo}`}
         onMouseEnter={abre}
         onMouseLeave={fecha}
         onFocus={abre}
@@ -35,7 +35,7 @@ export function ColHint({ label, titulo, oque, comoLer }: {
         <div className="colhint-pop" role="tooltip" style={{ left: pos.x, top: pos.y }} onClick={(e) => e.stopPropagation()}>
           <div className="colhint-t">{titulo}</div>
           <div className="colhint-d">{oque}</div>
-          {comoLer && <div className="colhint-l"><b>Como ler:</b> {comoLer}</div>}
+          {comoLer && <div className="colhint-l"><b>How to read:</b> {comoLer}</div>}
         </div>
       )}
     </span>

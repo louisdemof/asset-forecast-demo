@@ -30,7 +30,7 @@ export async function validarMes(
   metricas: Record<string, unknown>,
   observacao?: string,
 ): Promise<void> {
-  if (!supabase) throw new Error('Supabase não configurado');
+  if (!supabase) throw new Error('Supabase not configured');
   const uid = (await supabase.auth.getUser()).data.user?.id ?? null;
   const { error } = await supabase.from('validacoes_mensais').upsert(
     {
@@ -44,7 +44,7 @@ export async function validarMes(
 }
 
 export async function reverterValidacao(mesISO: string): Promise<void> {
-  if (!supabase) throw new Error('Supabase não configurado');
+  if (!supabase) throw new Error('Supabase not configured');
   const uid = (await supabase.auth.getUser()).data.user?.id ?? null;
   const { error } = await supabase.from('validacoes_mensais').upsert(
     {

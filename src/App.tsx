@@ -31,14 +31,14 @@ const mwh = (v: number) => `${v.toLocaleString('pt-BR', { maximumFractionDigits:
 
 /** Classifica o "Match Excel" de uma usina: motor ÷ Forecast oficial + motivo curto da divergência. */
 function divergencia(u: UsinaResumo, baseFixa?: number): { m: number | null; tag: string; motivo: string; cls: string } {
-  if (u.semForecast || !u.receitaForecast) return { m: null, tag: 's/ forecast', motivo: 'usina não está na aba Forecast oficial', cls: 'muted' };
+  if (u.semForecast || !u.receitaForecast) return { m: null, tag: 'no forecast', motivo: 'plant is not in the official Forecast tab', cls: 'muted' };
   const m = u.receitaEngine / u.receitaForecast;
   const dif = u.receitaEngine - u.receitaForecast;
-  if (Math.abs(m - 1) < 0.001) return { m, tag: '', motivo: 'reproduz o Excel exatamente', cls: 'match-ok' };
-  const base = `motor ${brl(u.receitaEngine)} · oficial ${brl(u.receitaForecast)} · dif ${brl(dif)} (${((m - 1) * 100).toFixed(1)}%)`;
-  if (Math.abs(m - 1) < 0.02) return { m, tag: '≈ ok', motivo: `≈ dentro de 2% · ${base}`, cls: 'match-near' };
-  if (baseFixa && baseFixa > 0) return { m, tag: 'base fixa', motivo: `base de cálculo hardcoded no Excel · ${base}`, cls: 'match-bad' };
-  return { m, tag: 'ajuste Excel', motivo: `diferença absorvida por ajuste manual/cap no Excel · ${base}`, cls: 'match-bad' };
+  if (Math.abs(m - 1) < 0.001) return { m, tag: '', motivo: 'reproduces the Excel exactly', cls: 'match-ok' };
+  const base = `engine ${brl(u.receitaEngine)} · official ${brl(u.receitaForecast)} · diff ${brl(dif)} (${((m - 1) * 100).toFixed(1)}%)`;
+  if (Math.abs(m - 1) < 0.02) return { m, tag: '≈ ok', motivo: `≈ within 2% · ${base}`, cls: 'match-near' };
+  if (baseFixa && baseFixa > 0) return { m, tag: 'fixed base', motivo: `calculation base hardcoded in the Excel · ${base}`, cls: 'match-bad' };
+  return { m, tag: 'Excel adjustment', motivo: `difference absorbed by manual adjustment/cap in the Excel · ${base}`, cls: 'match-bad' };
 }
 
 type Agrupar = 'usina' | 'cliente' | 'disco';
@@ -47,7 +47,7 @@ interface GrupoRollup { chave: string; n: number; mwac: number; ef: number; rece
 function rollup(usinas: UsinaResumo[], por: Exclude<Agrupar, 'usina'>): GrupoRollup[] {
   const acc = new Map<string, GrupoRollup>();
   for (const u of usinas) {
-    const chave = (por === 'cliente' ? u.cliente : u.disco) || '— sem ' + (por === 'cliente' ? 'cliente' : 'distribuidora');
+    const chave = (por === 'cliente' ? u.cliente : u.disco) || '— no ' + (por === 'cliente' ? 'client' : 'utility');
     const g = acc.get(chave) ?? { chave, n: 0, mwac: 0, ef: 0, receita: 0, forecast: 0, budget: 0 };
     g.n += 1; g.mwac += u.potMWac; g.ef += u.energiaFinalTotal;
     g.receita += u.receitaEngine; g.forecast += u.receitaForecast; g.budget += u.budget;
@@ -58,7 +58,7 @@ function rollup(usinas: UsinaResumo[], por: Exclude<Agrupar, 'usina'>): GrupoRol
 
 /** Exporta o forecast (linhas filtradas) em CSV — separador ';' e BOM p/ Excel pt-BR. */
 function exportarCSV(usinas: UsinaResumo[]) {
-  const header = ['Usina', 'Distribuidora', 'Cliente', 'MWac', 'Energia Final (MWh)', 'Receita Forecast (R$)', 'Budget (R$)', 'vs Budget %', 'Status'];
+  const header = ['Plant', 'Utility', 'Client', 'MWac', 'Final Energy (MWh)', 'Revenue Forecast (R$)', 'Budget (R$)', 'vs Budget %', 'Status'];
   const linhas = usinas.map((u) => [
     u.projeto, u.disco, u.cliente || '',
     u.potMWac.toFixed(1),
@@ -66,7 +66,7 @@ function exportarCSV(usinas: UsinaResumo[]) {
     u.receitaEngine.toFixed(0),
     u.budget.toFixed(0),
     u.budget ? ((u.receitaEngine / u.budget - 1) * 100).toFixed(1) : '',
-    u.semForecast ? 'fora do forecast' : u.noPipeline ? 'no pipeline' : '',
+    u.semForecast ? 'off-forecast' : u.noPipeline ? 'in pipeline' : '',
   ]);
   const total = ['TOTAL', '', '', '',
     usinas.reduce((s, u) => s + u.energiaFinalTotal, 0).toFixed(0),
@@ -195,12 +195,12 @@ export default function App() {
         <img className="topband-logo" src={`${import.meta.env.BASE_URL}SolarCo_logo.svg`} alt="SolarCo" />
         <div className="topband-actions">
           <FormulasHelp />
-          <a className="topband-link" href={`${import.meta.env.BASE_URL}apresentacao.html`} target="_blank" rel="noreferrer">📊 Apresentação ↗</a>
-          <a className="topband-link" href={`${import.meta.env.BASE_URL}governanca-dados.html`} target="_blank" rel="noreferrer">🗂 Governança ↗</a>
-          <a className="topband-link" href={`${import.meta.env.BASE_URL}Contrato_de_Dados_Governanca.xlsx`}>⤓ Contrato de Dados (xlsx)</a>
+          <a className="topband-link" href={`${import.meta.env.BASE_URL}apresentacao.html`} target="_blank" rel="noreferrer">📊 Presentation ↗</a>
+          <a className="topband-link" href={`${import.meta.env.BASE_URL}governanca-dados.html`} target="_blank" rel="noreferrer">🗂 Governance ↗</a>
+          <a className="topband-link" href={`${import.meta.env.BASE_URL}Contrato_de_Dados_Governanca.xlsx`}>⤓ Data Contract (xlsx)</a>
           {podeAdmin && (
             <button className={`topband-link${aba === 'admin' ? ' topband-link--on' : ''}`} onClick={() => setAba('admin')}>
-              👤 Usuários & Admin
+              👤 Users & Admin
             </button>
           )}
           <AuthButton />
@@ -210,27 +210,27 @@ export default function App() {
         <div className="brand">
           <span className="brand-mark" />
           <div>
-            <h1>Módulo de Receita</h1>
-            <p>Forecast de receita do portfólio · Asset</p>
+            <h1>Revenue Module</h1>
+            <p>Portfolio revenue forecast · Asset</p>
           </div>
         </div>
-        <span className="tag">protótipo · dados Forecast 6+6</span>
+        <span className="tag">prototype · Forecast 6+6 data</span>
       </header>
 
       <nav className="tabs">
-        <button className={aba === 'receita' ? 'tab on' : 'tab'} onClick={() => setAba('receita')}>Receita</button>
-        <button className={aba === 'pvsyst' ? 'tab on' : 'tab'} onClick={() => setAba('pvsyst')}>Geração (PVsyst)</button>
-        <button className={aba === 'tarifas' ? 'tab on' : 'tab'} onClick={() => setAba('tarifas')}>Tarifas & Reajustes</button>
-        <button className={aba === 'metodos' ? 'tab on' : 'tab'} onClick={() => setAba('metodos')}>Métodos por cliente</button>
-        <button className={aba === 'alertas' ? 'tab on' : 'tab'} onClick={() => setAba('alertas')}>Alertas</button>
-        <button className={aba === 'compensacao' ? 'tab on' : 'tab'} onClick={() => setAba('compensacao')}>Compensação (MeterHub)</button>
-        <button className={aba === 'auditoria' ? 'tab on' : 'tab'} onClick={() => setAba('auditoria')}>Auditoria UCs</button>
-        <button className={aba === 'reconciliacao' ? 'tab on' : 'tab'} onClick={() => setAba('reconciliacao')}>Prev × Real</button>
-        <button className={aba === 'geracao' ? 'tab on' : 'tab'} onClick={() => setAba('geracao')}>Geração (P50 × Inj)</button>
+        <button className={aba === 'receita' ? 'tab on' : 'tab'} onClick={() => setAba('receita')}>Revenue</button>
+        <button className={aba === 'pvsyst' ? 'tab on' : 'tab'} onClick={() => setAba('pvsyst')}>Generation (PVsyst)</button>
+        <button className={aba === 'tarifas' ? 'tab on' : 'tab'} onClick={() => setAba('tarifas')}>Tariffs & Adjustments</button>
+        <button className={aba === 'metodos' ? 'tab on' : 'tab'} onClick={() => setAba('metodos')}>Methods by client</button>
+        <button className={aba === 'alertas' ? 'tab on' : 'tab'} onClick={() => setAba('alertas')}>Alerts</button>
+        <button className={aba === 'compensacao' ? 'tab on' : 'tab'} onClick={() => setAba('compensacao')}>Compensation (MeterHub)</button>
+        <button className={aba === 'auditoria' ? 'tab on' : 'tab'} onClick={() => setAba('auditoria')}>UC Audit</button>
+        <button className={aba === 'reconciliacao' ? 'tab on' : 'tab'} onClick={() => setAba('reconciliacao')}>Forecast × Actual</button>
+        <button className={aba === 'geracao' ? 'tab on' : 'tab'} onClick={() => setAba('geracao')}>Generation (P50 × Inj)</button>
       </nav>
 
-      {loading && <div className="state">Carregando portfólio…</div>}
-      {error && <div className="state err">Erro: {error}</div>}
+      {loading && <div className="state">Loading portfolio…</div>}
+      {error && <div className="state err">Error: {error}</div>}
 
       {!loading && !error && aba === 'pvsyst' && <PVsystTable />}
       {!loading && !error && aba === 'tarifas' && <TarifasTable />}
@@ -252,60 +252,60 @@ export default function App() {
         <>
           <ValidacaoBar />
           <div className="receita-toolbar">
-            <button className="btn-nova-usina" onClick={() => setNovaUsina(true)}>＋ Nova usina</button>
+            <button className="btn-nova-usina" onClick={() => setNovaUsina(true)}>＋ New plant</button>
           </div>
           <section className="kpis">
-            <Kpi label="Usinas" value={String(kpi.nUsinas)} sub={`${kpi.nLinhas} linhas · ${kpi.mwac.toFixed(0)} MWac`} />
-            <Kpi label="Receita motor / ano" value={brl(kpi.receita)} sub="engine · nível Energia Final" accent />
-            <Kpi label="vs Budget" value={`${kpi.budget ? ((kpi.receita / kpi.budget - 1) * 100).toFixed(1) : '0'}%`} sub={`orçado ${brl(kpi.budget)}`} warn={kpi.receita < kpi.budget} />
-            <Kpi label="Geração P50 / ano" value={mwh(kpi.p50)} sub="antes dos haircuts" />
+            <Kpi label="Plants" value={String(kpi.nUsinas)} sub={`${kpi.nLinhas} rows · ${kpi.mwac.toFixed(0)} MWac`} />
+            <Kpi label="Engine revenue / year" value={brl(kpi.receita)} sub="engine · Final Energy level" accent />
+            <Kpi label="vs Budget" value={`${kpi.budget ? ((kpi.receita / kpi.budget - 1) * 100).toFixed(1) : '0'}%`} sub={`budgeted ${brl(kpi.budget)}`} warn={kpi.receita < kpi.budget} />
+            <Kpi label="P50 Generation / year" value={mwh(kpi.p50)} sub="before haircuts" />
           </section>
 
-          <div className="data-stamp" title="Procedência dos dados desta aba. Atualizar em src/lib/dataInfo.ts ao repuxar.">
-            📅 <b>Forecast 6+6</b> · {carimboForecast()} &nbsp;·&nbsp; compensação por premissa do Excel (medição real na aba Compensação)
+          <div className="data-stamp" title="Provenance of the data on this tab. Update in src/lib/dataInfo.ts when refreshing.">
+            📅 <b>Forecast 6+6</b> · {carimboForecast()} &nbsp;·&nbsp; compensation from Excel assumption (real metering on the Compensation tab)
           </div>
 
           <div className="toolbar">
             <input
               className="search"
-              placeholder="Buscar usina, distribuidora ou cliente…"
+              placeholder="Search plant, utility or client…"
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
             />
-            <span className="count">{filtradas.length} usinas</span>
-            <div className="agrupar-toggle" role="group" aria-label="Agrupar por">
-              <button className={agrupar === 'usina' ? 'on' : ''} onClick={() => setAgrupar('usina')}>por usina</button>
-              <button className={agrupar === 'cliente' ? 'on' : ''} onClick={() => setAgrupar('cliente')}>por cliente</button>
-              <button className={agrupar === 'disco' ? 'on' : ''} onClick={() => setAgrupar('disco')}>por distribuidora</button>
+            <span className="count">{filtradas.length} plants</span>
+            <div className="agrupar-toggle" role="group" aria-label="Group by">
+              <button className={agrupar === 'usina' ? 'on' : ''} onClick={() => setAgrupar('usina')}>by plant</button>
+              <button className={agrupar === 'cliente' ? 'on' : ''} onClick={() => setAgrupar('cliente')}>by client</button>
+              <button className={agrupar === 'disco' ? 'on' : ''} onClick={() => setAgrupar('disco')}>by utility</button>
             </div>
-            <button className="btn-export" onClick={() => exportarCSV(filtradas)}>⤓ Exportar CSV</button>
+            <button className="btn-export" onClick={() => exportarCSV(filtradas)}>⤓ Export CSV</button>
           </div>
 
           <div className="filtros">
             <div className="filtro-slider">
               <div className="filtro-slider-top">
-                <span>Compensação ≤ <b>{compMax}%</b></span>
-                <span className="filtro-slider-count">{filtradas.length} usinas</span>
+                <span>Compensation ≤ <b>{compMax}%</b></span>
+                <span className="filtro-slider-count">{filtradas.length} plants</span>
               </div>
               <input className="slider" type="range" min={0} max={100} step={1} style={{ ['--val' as string]: `${compMax}%` }} value={compMax} onChange={(e) => setCompMax(+e.target.value)} />
             </div>
-            <label>Distribuidora
+            <label>Utility
               <select value={fDisco} onChange={(e) => setFDisco(e.target.value)}>
-                <option value="todas">todas</option>
+                <option value="todas">all</option>
                 {discos.map((d) => <option key={d} value={d}>{d}</option>)}
               </select>
             </label>
             <label>Status
               <select value={fStatus} onChange={(e) => setFStatus(e.target.value as typeof fStatus)}>
-                <option value="todos">todos</option>
-                <option value="negativa">receita negativa</option>
-                <option value="abaixo">abaixo do budget</option>
-                <option value="pipeline">no pipeline</option>
-                <option value="fora">fora do Forecast</option>
+                <option value="todos">all</option>
+                <option value="negativa">negative revenue</option>
+                <option value="abaixo">below budget</option>
+                <option value="pipeline">in pipeline</option>
+                <option value="fora">off-Forecast</option>
               </select>
             </label>
             {(compMax !== 100 || fDisco !== 'todas' || fStatus !== 'todos' || busca) && (
-              <button className="reset-link" onClick={() => { setCompMax(100); setFDisco('todas'); setFStatus('todos'); setBusca(''); }}>↺ limpar filtros</button>
+              <button className="reset-link" onClick={() => { setCompMax(100); setFDisco('todas'); setFStatus('todos'); setBusca(''); }}>↺ clear filters</button>
             )}
           </div>
 
@@ -316,13 +316,13 @@ export default function App() {
               <table className="rollup-t">
                 <thead>
                   <tr>
-                    <th>{agrupar === 'cliente' ? 'Cliente (offtaker)' : 'Distribuidora'}</th>
-                    <th className="r">Usinas</th>
+                    <th>{agrupar === 'cliente' ? 'Client (offtaker)' : 'Utility'}</th>
+                    <th className="r">Plants</th>
                     <th className="r">MWac</th>
-                    <th className="r">Energia Final</th>
-                    <th className="r">Receita motor</th>
-                    <th className="r" title="Receita motor ÷ Forecast oficial (ponderado). 100% = reproduz o Excel.">Match Excel</th>
-                    <th className="r" title="Receita motor ÷ Budget − 1">vs Budget</th>
+                    <th className="r">Final Energy</th>
+                    <th className="r">Engine revenue</th>
+                    <th className="r" title="Engine revenue ÷ official Forecast (weighted). 100% = reproduces the Excel.">Match Excel</th>
+                    <th className="r" title="Engine revenue ÷ Budget − 1">vs Budget</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -344,7 +344,7 @@ export default function App() {
                 </tbody>
                 <tfoot>
                   <tr className="totais">
-                    <td>Total · {gruposRollup.length} {agrupar === 'cliente' ? 'clientes' : 'distribuidoras'}</td>
+                    <td>Total · {gruposRollup.length} {agrupar === 'cliente' ? 'clients' : 'utilities'}</td>
                     <td className="r">{filtradas.length}</td>
                     <td className="r">{totais.mwac.toFixed(1)}</td>
                     <td className="r">{mwh(totais.ef)}</td>
@@ -354,7 +354,7 @@ export default function App() {
                   </tr>
                 </tfoot>
               </table>
-              <p className="hint">Clique numa linha p/ voltar à visão por usina filtrada por {agrupar === 'cliente' ? 'esse cliente' : 'essa distribuidora'}.</p>
+              <p className="hint">Click a row to go back to the by-plant view filtered by {agrupar === 'cliente' ? 'that client' : 'that utility'}.</p>
             </div>
           ) : (
           <div className="tablewrap" ref={tabelaRef}>
@@ -362,57 +362,57 @@ export default function App() {
               <thead>
                 <tr>
                   <th className="chev-col"></th>
-                  <th className="sortable" onClick={() => toggleSort('projeto')}>Usina{seta('projeto')}</th>
-                  <th className="sortable" onClick={() => toggleSort('disco')}>Distribuidora{seta('disco')}</th>
-                  <th className="sortable" onClick={() => toggleSort('cliente')}>Cliente{seta('cliente')}</th>
+                  <th className="sortable" onClick={() => toggleSort('projeto')}>Plant{seta('projeto')}</th>
+                  <th className="sortable" onClick={() => toggleSort('disco')}>Utility{seta('disco')}</th>
+                  <th className="sortable" onClick={() => toggleSort('cliente')}>Client{seta('cliente')}</th>
                   <th className="r sortable" onClick={() => toggleSort('potMWac')}>
-                    <ColHint label="MWac" titulo="Potência instalada (MWac)" oque="O tamanho da usina, em megawatts de corrente alternada — a capacidade que efetivamente entrega energia à rede." comoLer="Maior = usina maior. É a referência de porte usada em toda a plataforma." />{seta('potMWac')}
+                    <ColHint label="MWac" titulo="Installed capacity (MWac)" oque="The size of the plant, in megawatts of alternating current — the capacity that actually delivers energy to the grid." comoLer="Larger = bigger plant. It is the size reference used throughout the platform." />{seta('potMWac')}
                   </th>
                   <th className="r sortable" onClick={() => toggleSort('energiaFinalTotal')}>
-                    <ColHint label="Energia Final" titulo="Energia Final (MWh/ano)" oque={<>A energia que de fato vira receita no ano. <span className="mono">P50 × Perf. Operacional × Perf. Compensação</span>, contada só nos meses em que a usina está em COD (operação comercial).</>} comoLer="É a base de faturamento — parte do P50 (geração bruta) após as perdas e a compensação." />{seta('energiaFinalTotal')}
+                    <ColHint label="Final Energy" titulo="Final Energy (MWh/year)" oque={<>The energy that actually becomes revenue in the year. <span className="mono">P50 × Operational Perf. × Compensation Perf.</span>, counted only in the months when the plant is in COD (commercial operation).</>} comoLer="It is the billing base — the share of P50 (gross generation) left after losses and compensation." />{seta('energiaFinalTotal')}
                   </th>
                   <th className="r sortable" onClick={() => toggleSort('perfCompMedia')}>
                     <ColHint
-                      label={<>Comp. <small>(premissa)</small></>}
-                      titulo="Perf. Compensação — PREMISSA"
-                      oque={<>Fração da energia líquida que vira crédito compensado. Aqui é a <b>premissa do Forecast</b> (Excel / curva de rampa do contrato), <b>não</b> medição.</>}
-                      comoLer={<>O chip diz a fonte: <span className="colhint-chip medivel">medível</span> = cliente Autoconsumo Remoto, dá pra validar na aba Compensação (MeterHub). <span className="colhint-chip premissa">premissa</span> = cliente Geração Compartilhada, vem do contrato — não é medido.</>}
+                      label={<>Comp. <small>(assumption)</small></>}
+                      titulo="Compensation Perf. — ASSUMPTION"
+                      oque={<>Fraction of the net energy that becomes offset credit. Here it is the <b>Forecast assumption</b> (Excel / contract ramp curve), <b>not</b> metering.</>}
+                      comoLer={<>The chip states the source: <span className="colhint-chip medivel">measurable</span> = Remote Self-Consumption client, can be validated on the Compensation tab (MeterHub). <span className="colhint-chip premissa">assumption</span> = Shared Generation client, comes from the contract — not measured.</>}
                     />{seta('perfCompMedia')}
                   </th>
                   <th className="r sortable" onClick={() => toggleSort('receitaEngine')}>
-                    <ColHint label="Receita motor" titulo="Receita motor (R$/ano)" oque={<>A receita que a plataforma <b>calcula</b>: <span className="mono">Base de Cálculo × Energia Final − Demanda</span>.</>} comoLer="É o número da plataforma. Para saber se bate com o Excel oficial, olhe a coluna Match Excel." />{seta('receitaEngine')}
+                    <ColHint label="Engine revenue" titulo="Engine revenue (R$/year)" oque={<>The revenue the platform <b>calculates</b>: <span className="mono">Calculation Base × Final Energy − Demand</span>.</>} comoLer="It is the platform's number. To check whether it matches the official Excel, look at the Match Excel column." />{seta('receitaEngine')}
                   </th>
                   <th className="r sortable" onClick={() => toggleSort('margem')}>
-                    <ColHint label="Margem" titulo="Margem (R$/ano)" oque={<>Receita motor <b>menos custos de operação</b>: <span className="mono">Receita − Fee de operação de GC</span>. Hoje só a <b>OPERON</b> (Buriti) tem fee (R$ 85/MWh). Primeiro passo do módulo Resultado.</>} comoLer="Igual à Receita quando não há custo. Onde há fee, aparece o desconto em vermelho." />{seta('margem')}
+                    <ColHint label="Margin" titulo="Margin (R$/year)" oque={<>Engine revenue <b>minus operating costs</b>: <span className="mono">Revenue − GC operation fee</span>. Today only <b>OPERON</b> (Buriti) has a fee (R$ 85/MWh). First step of the Result module.</>} comoLer="Equal to Revenue when there is no cost. Where there is a fee, the discount appears in red." />{seta('margem')}
                   </th>
                   <th className="r sortable" onClick={() => toggleSort('rMwh')}>
-                    <ColHint label="R$/MWh" titulo="Preço médio realizado" oque={<>Receita ÷ Energia Final — quanto a usina fatura por MWh entregue.</>} comoLer="Permite comparar usinas de tamanhos diferentes na mesma régua. '—' quando a energia é ~0." />{seta('rMwh')}
+                    <ColHint label="R$/MWh" titulo="Realized average price" oque={<>Revenue ÷ Final Energy — how much the plant bills per MWh delivered.</>} comoLer="Lets you compare plants of different sizes on the same scale. '—' when the energy is ~0." />{seta('rMwh')}
                   </th>
                   <th className="r sortable" onClick={() => toggleSort('vsBudget')}>
-                    <ColHint label="vs Budget" titulo="vs Budget" oque={<>Receita motor comparada ao orçamento travado: <span className="mono">Receita ÷ Budget − 1</span>.</>} comoLer="Verde = acima do orçado; vermelho = abaixo." />{seta('vsBudget')}
+                    <ColHint label="vs Budget" titulo="vs Budget" oque={<>Engine revenue compared to the locked budget: <span className="mono">Revenue ÷ Budget − 1</span>.</>} comoLer="Green = above budget; red = below." />{seta('vsBudget')}
                   </th>
                   <th className="r">
                     <ColHint
                       label={<>Match Excel <span aria-hidden>🔎</span></>}
                       titulo="Match Excel"
-                      oque={<>Receita do motor ÷ Receita do <b>Forecast oficial</b> (o Excel 6+6). <b>100% = a plataforma reproduz o Excel exatamente.</b></>}
-                      comoLer={<>A tag ao lado diz o porquê quando diverge (<i>ajuste Excel</i>, <i>base fixa</i>, <i>≈ ok</i>, <i>s/ forecast</i>). Clique na célula para abrir o detalhe da divergência.</>}
+                      oque={<>Engine revenue ÷ <b>official Forecast</b> revenue (the 6+6 Excel). <b>100% = the platform reproduces the Excel exactly.</b></>}
+                      comoLer={<>The tag beside it says why when it diverges (<i>Excel adjustment</i>, <i>fixed base</i>, <i>≈ ok</i>, <i>no forecast</i>). Click the cell to open the divergence detail.</>}
                     />
                   </th>
                   <th>
                     <ColHint
-                      label="Fim contrato"
-                      titulo="Fim de contrato"
-                      oque={<>Fim do contrato derivado do campo <span className="mono">Contract term</span> (aba Comercial).</>}
-                      comoLer={<>Ano cheio p/ <span className="mono">"Until AAAA"</span>; com <b>*</b> = estimado (início da compensação + N anos); <b>—</b> = sem dado na planilha (a preencher).</>}
+                      label="Contract end"
+                      titulo="Contract end"
+                      oque={<>Contract end derived from the <span className="mono">Contract term</span> field (Commercial tab).</>}
+                      comoLer={<>Full year for <span className="mono">"Until YYYY"</span>; with <b>*</b> = estimated (start of compensation + N years); <b>—</b> = no data in the spreadsheet (to be filled in).</>}
                     />
                   </th>
                   <th>
                     <ColHint
                       label="Pipeline"
-                      titulo="Status comercial"
-                      oque={<><b>no pipeline</b> = tem deal comercial em negociação (aba Comercial). <b>fora do Forecast</b> = está no Contratos mas não na aba Forecast oficial.</>}
-                      comoLer="'—' = usina estável, já operando com cliente definido." />
+                      titulo="Commercial status"
+                      oque={<><b>in pipeline</b> = has a commercial deal under negotiation (Commercial tab). <b>off-Forecast</b> = is in Contracts but not in the official Forecast tab.</>}
+                      comoLer="'—' = stable plant, already operating with a defined client." />
                   </th>
                 </tr>
               </thead>
@@ -428,19 +428,19 @@ export default function App() {
                         <td className="chev-col">{aberta ? '▾' : '▸'}</td>
                         <td className="strong">{u.projeto}</td>
                         <td>{u.disco}</td>
-                        <td>{u.cliente ? u.cliente : <span className="sem-cliente" title="usina sem cliente atribuído">⚠ sem cliente</span>}</td>
+                        <td>{u.cliente ? u.cliente : <span className="sem-cliente" title="plant with no client assigned">⚠ no client</span>}</td>
                         <td className="r">{u.potMWac.toFixed(1)}</td>
                         <td className="r muted">{mwh(u.energiaFinalTotal)}</td>
                         <td className="r">
                           <span className={`comp-chip ${compBucket(u.perfCompMedia)}`}>{(u.perfCompMedia * 100).toFixed(0)}%</span>
                           {u.modelo === 'AR'
-                            ? <span className="comp-src medido" title="Autoconsumo Remoto — compensação MEDÍVEL na MeterHub (ver aba Compensação). O valor aqui ainda é a premissa do Forecast.">medível</span>
-                            : <span className="comp-src premissa" title="Geração Compartilhada — compensação vem do contrato/premissa do Forecast; não é medida pela MeterHub.">premissa</span>}
+                            ? <span className="comp-src medido" title="Remote Self-Consumption — MEASURABLE compensation in MeterHub (see Compensation tab). The value here is still the Forecast assumption.">measurable</span>
+                            : <span className="comp-src premissa" title="Shared Generation — compensation comes from the contract/Forecast assumption; not measured by MeterHub.">assumption</span>}
                         </td>
                         <td className="r strong">{brl(u.receitaEngine)}</td>
                         <td className={`r ${u.custoOperacao > 0 ? 'strong' : 'muted'}`}>
                           {brl(u.margem)}
-                          {u.custoOperacao > 0 && <span className="custo-op" title={`Fee de operação de GC pago à OPERON: −${brl(u.custoOperacao)}/ano (R$ 85/MWh compensado)`}> −{brl(u.custoOperacao)}</span>}
+                          {u.custoOperacao > 0 && <span className="custo-op" title={`GC operation fee paid to OPERON: −${brl(u.custoOperacao)}/year (R$ 85/MWh offset)`}> −{brl(u.custoOperacao)}</span>}
                         </td>
                         <td className="r muted">{u.energiaFinalTotal >= 1 ? Math.round(u.receitaEngine / u.energiaFinalTotal).toLocaleString('pt-BR') : '—'}</td>
                         <td className={`r ${u.budget && difPct < 0 ? 'diff' : 'muted'}`}>
@@ -474,9 +474,9 @@ export default function App() {
                         })()}
                         <td>
                           {u.semForecast ? (
-                            <span className="badge warn">fora do Forecast</span>
+                            <span className="badge warn">off-Forecast</span>
                           ) : u.noPipeline ? (
-                            <span className="badge ok">no pipeline</span>
+                            <span className="badge ok">in pipeline</span>
                           ) : (
                             <span className="badge">—</span>
                           )}
@@ -494,14 +494,14 @@ export default function App() {
               <tfoot>
                 <tr className="totais">
                   <td className="chev-col"></td>
-                  <td>Total · {filtradas.length} usinas</td>
+                  <td>Total · {filtradas.length} plants</td>
                   <td></td>
                   <td></td>
                   <td className="r">{totais.mwac.toFixed(1)}</td>
                   <td className="r">{mwh(totais.ef)}</td>
                   <td></td>
                   <td className="r">{brl(totais.receita)}</td>
-                  <td className="r strong" title={totais.custoOperacao > 0 ? `Custo de operação total: −${brl(totais.custoOperacao)}/ano` : ''}>{brl(totais.margem)}</td>
+                  <td className="r strong" title={totais.custoOperacao > 0 ? `Total operating cost: −${brl(totais.custoOperacao)}/year` : ''}>{brl(totais.margem)}</td>
                   <td className="r">{totais.rMwh.toFixed(0)}</td>
                   <td className="r">{totais.budget ? `${totais.difPct >= 0 ? '+' : ''}${totais.difPct.toFixed(1)}%` : '—'}</td>
                   <td className="r strong">{totais.forecast ? `${((totais.receita / totais.forecast) * 100).toFixed(1)}%` : '—'}</td>
@@ -515,10 +515,10 @@ export default function App() {
           {agrupar === 'usina' && <StickyScrollbar targetRef={tabelaRef} />}
 
           <footer className="foot">
-            Receita no nível <b>Forecast oficial</b>: <b>Energia Final = P50 × Perf. Operacional × Perf.
-            Compensação</b>, faturada só nos meses em COD. Perf. Operacional = 1 − Σperdas (editável);
-            Perf. Compensação = input da MeterHub. Clique numa usina pra editar o contrato e a cadeia de
-            energia, e comparar com o budget travado.
+            Revenue at the <b>official Forecast</b> level: <b>Final Energy = P50 × Operational Perf. × Compensation
+            Perf.</b>, billed only in the COD months. Operational Perf. = 1 − Σlosses (editable);
+            Compensation Perf. = MeterHub input. Click a plant to edit the contract and the energy
+            chain, and compare against the locked budget.
           </footer>
         </>
       )}
@@ -543,15 +543,15 @@ function ReceitaMensalChart({ serie }: { serie: { mes: string; receita: number; 
     <section className="mensal">
       <div className="mensal-head">
         <div>
-          <h3>Receita mensal · Forecast</h3>
-          <p>{serie.length} meses · total {brl(total)}</p>
+          <h3>Monthly revenue · Forecast</h3>
+          <p>{serie.length} months · total {brl(total)}</p>
         </div>
         {d && (
           <div className="mensal-detalhe">
             <b>{fmtMes(d.mes)}</b>
-            <span>Receita <b>{brl(d.receita)}</b></span>
-            <span>Energia <b>{mwh(d.energia)}</b></span>
-            <span>Usinas em COD <b>{d.nCOD}</b></span>
+            <span>Revenue <b>{brl(d.receita)}</b></span>
+            <span>Energy <b>{mwh(d.energia)}</b></span>
+            <span>Plants in COD <b>{d.nCOD}</b></span>
           </div>
         )}
       </div>
@@ -574,7 +574,7 @@ function ReceitaMensalChart({ serie }: { serie: { mes: string; receita: number; 
           );
         })}
       </svg>
-      <p className="mensal-foot">barras cinza = meses ainda em construção (sem usina em COD) · clique num mês pra detalhar</p>
+      <p className="mensal-foot">gray bars = months still under construction (no plant in COD) · click a month for details</p>
     </section>
   );
 }

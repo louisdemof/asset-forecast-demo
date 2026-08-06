@@ -47,24 +47,24 @@ export default function CadastroUCEditor() {
   return (
     <div className="cadastro-uc">
       <button className="cadastro-toggle" onClick={() => setAberto((v) => !v)}>
-        {aberto ? '▾' : '▸'} Cadastro UC → usina {rows.length ? `(${rows.length} no banco)` : ''}
+        {aberto ? '▾' : '▸'} UC → plant registration {rows.length ? `(${rows.length} in the database)` : ''}
       </button>
       {aberto && (
         <div className="cadastro-body">
-          <p className="cadastro-hint">Mapeia a UC (código de instalação / matrícula) da fatura para a usina. Sobrepõe o baseline embutido; usado no roteamento do upload.</p>
+          <p className="cadastro-hint">Maps the invoice's UC (installation code / registration number) to the plant. Overrides the embedded baseline; used in the upload routing.</p>
           {erro && <p className="valbar-erro">{erro}</p>}
           {podeEditar && (
             <div className="cadastro-form">
-              <input placeholder="UC / código" value={nvUc} onChange={(e) => setNvUc(e.target.value)} />
-              <input placeholder="Usina" value={nvUsina} onChange={(e) => setNvUsina(e.target.value)} />
-              <input placeholder="Distribuidora (opc.)" value={nvDisco} onChange={(e) => setNvDisco(e.target.value)} />
-              <input placeholder="W-codes (opc., separados por espaço)" value={nvW} onChange={(e) => setNvW(e.target.value)} />
-              <button className="admin-btn" disabled={busy || !nvUc.trim() || !nvUsina.trim()} onClick={adicionar}>＋ Adicionar</button>
+              <input placeholder="UC / code" value={nvUc} onChange={(e) => setNvUc(e.target.value)} />
+              <input placeholder="Plant" value={nvUsina} onChange={(e) => setNvUsina(e.target.value)} />
+              <input placeholder="Utility (opt.)" value={nvDisco} onChange={(e) => setNvDisco(e.target.value)} />
+              <input placeholder="W-codes (opt., space-separated)" value={nvW} onChange={(e) => setNvW(e.target.value)} />
+              <button className="admin-btn" disabled={busy || !nvUc.trim() || !nvUsina.trim()} onClick={adicionar}>＋ Add</button>
             </div>
           )}
           <div className="tablewrap">
             <table className="comp-t">
-              <thead><tr><th>UC</th><th>Usina</th><th>Distribuidora</th><th>W-codes</th><th></th></tr></thead>
+              <thead><tr><th>UC</th><th>Plant</th><th>Utility</th><th>W-codes</th><th></th></tr></thead>
               <tbody>
                 {rows.map((r) => (
                   <tr key={r.id}>
@@ -72,10 +72,10 @@ export default function CadastroUCEditor() {
                     <td>{r.usina}</td>
                     <td>{r.distribuidora ?? '—'}</td>
                     <td className="mono" style={{ fontSize: 11 }}>{r.w_codes?.join(', ') || '—'}</td>
-                    <td className="r">{podeApagar && <button className="auth-link" onClick={() => void remover(r.id)}>apagar</button>}</td>
+                    <td className="r">{podeApagar && <button className="auth-link" onClick={() => void remover(r.id)}>delete</button>}</td>
                   </tr>
                 ))}
-                {!rows.length && <tr><td colSpan={5} className="muted">Nenhum cadastro no banco ainda (usando só o baseline embutido).</td></tr>}
+                {!rows.length && <tr><td colSpan={5} className="muted">No registration in the database yet (using only the embedded baseline).</td></tr>}
               </tbody>
             </table>
           </div>

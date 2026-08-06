@@ -71,29 +71,29 @@ export default function ReconciliacaoPanel() {
     return { rPrev, rReal, acur: rPrev ? 1 - absErr / rPrev : null, n: linhas.length };
   }, [linhas]);
 
-  if (!contratos.size) return <div className="state">Carregando…</div>;
+  if (!contratos.size) return <div className="state">Loading…</div>;
 
   return (
     <>
       <section className="kpis">
-        <Kpi label="Receita prevista" value={rs(tot.rPrev)} sub={`premissa · ${tot.n} usinas · meses fechados`} />
-        <Kpi label="Receita realizada" value={rs(tot.rReal)} sub="compensação real (MeterHub)" accent />
-        <Kpi label="Desvio total" value={pct(tot.rPrev ? (tot.rReal - tot.rPrev) / tot.rPrev : null)} sub={`${rs(tot.rReal - tot.rPrev)} vs previsto`} />
-        <Kpi label="Acurácia do forecast" value={tot.acur == null ? '—' : `${(tot.acur * 100).toFixed(1)}%`} sub="1 − Σ|desvio| ÷ Σ previsto" />
+        <Kpi label="Forecast revenue" value={rs(tot.rPrev)} sub={`assumption · ${tot.n} plants · closed months`} />
+        <Kpi label="Actual revenue" value={rs(tot.rReal)} sub="actual compensation (MeterHub)" accent />
+        <Kpi label="Total deviation" value={pct(tot.rPrev ? (tot.rReal - tot.rPrev) / tot.rPrev : null)} sub={`${rs(tot.rReal - tot.rPrev)} vs forecast`} />
+        <Kpi label="Forecast accuracy" value={tot.acur == null ? '—' : `${(tot.acur * 100).toFixed(1)}%`} sub="1 − Σ|deviation| ÷ Σ forecast" />
       </section>
 
       <div className="audit-head">
         <p>
-          Compara, nos <b>meses já fechados</b>, a receita da <b>premissa</b> (perfComp × P50) com a receita recalculada pela <b>compensação
-          real medida</b> (MeterHub, limpa). Fecha o ciclo do forecast: mostra onde o modelo diverge da realidade. Só contratos faturados
-          na <b>base compensação</b> — todos os <b>AR</b> (TELMO, LOGIX, HIDRUS, TELCO) + <b>NEXUS</b>; os demais GC faturam a injeção (take-or-pay).
+          Compares, over the <b>already-closed months</b>, the <b>assumption</b> revenue (perfComp × P50) with the revenue recalculated from the <b>actual
+          measured compensation</b> (MeterHub, clean). Closes the forecast loop: shows where the model diverges from reality. Only contracts billed
+          on the <b>compensation basis</b> — all <b>AR</b> (TELMO, LOGIX, HIDRUS, TELCO) + <b>NEXUS</b>; the other GC bill injection (take-or-pay).
         </p>
         <div className="audit-filtros">
           <label className="medido-toggle">
             <input type="checkbox" checked={usarMedido} onChange={(e) => setUsarMedido(e.target.checked)} />
-            &nbsp;Usar o medido nos meses fechados (afeta a Receita)
+            &nbsp;Use the measured value in closed months (affects Revenue)
           </label>
-          <span className="hint" style={{ marginLeft: 4 }}>clique nos cabeçalhos para ordenar</span>
+          <span className="hint" style={{ marginLeft: 4 }}>click the headers to sort</span>
         </div>
       </div>
 
@@ -102,14 +102,14 @@ export default function ReconciliacaoPanel() {
           <thead>
             <tr>
               <th className="chev-col"></th>
-              <Th k="projeto" sort={sort} on={ordenar}>Usina</Th>
-              <Th k="cliente" sort={sort} on={ordenar}>Cliente</Th>
-              <Th k="nMeses" sort={sort} on={ordenar} r>Meses</Th>
-              <Th k="ePrev" sort={sort} on={ordenar} r>Energia prev. (MWh)</Th>
-              <Th k="eReal" sort={sort} on={ordenar} r>Energia real (MWh)</Th>
-              <Th k="rPrev" sort={sort} on={ordenar} r>Receita prev.</Th>
-              <Th k="rReal" sort={sort} on={ordenar} r>Receita real</Th>
-              <Th k="delta" sort={sort} on={ordenar} r title="▼ maior impacto positivo (realizado &gt; previsto) · ▲ maior impacto negativo">Desvio</Th>
+              <Th k="projeto" sort={sort} on={ordenar}>Plant</Th>
+              <Th k="cliente" sort={sort} on={ordenar}>Client</Th>
+              <Th k="nMeses" sort={sort} on={ordenar} r>Months</Th>
+              <Th k="ePrev" sort={sort} on={ordenar} r>Energy forecast (MWh)</Th>
+              <Th k="eReal" sort={sort} on={ordenar} r>Energy actual (MWh)</Th>
+              <Th k="rPrev" sort={sort} on={ordenar} r>Revenue forecast</Th>
+              <Th k="rReal" sort={sort} on={ordenar} r>Revenue actual</Th>
+              <Th k="delta" sort={sort} on={ordenar} r title="▼ largest positive impact (actual &gt; forecast) · ▲ largest negative impact">Deviation</Th>
             </tr>
           </thead>
           <tbody>
@@ -135,7 +135,7 @@ export default function ReconciliacaoPanel() {
                         <div style={{ padding: '8px 14px' }}>
                           <table className="uc-mes-table">
                             <thead>
-                              <tr><th>Mês</th><th className="r">Energia prev.</th><th className="r">Energia real</th><th className="r">Δ energia</th><th className="r">Receita prev.</th><th className="r">Receita real</th><th className="r">Desvio</th></tr>
+                              <tr><th>Month</th><th className="r">Energy forecast</th><th className="r">Energy actual</th><th className="r">Δ energy</th><th className="r">Revenue forecast</th><th className="r">Revenue actual</th><th className="r">Deviation</th></tr>
                             </thead>
                             <tbody>
                               {l.meses.map((m) => {
@@ -164,12 +164,12 @@ export default function ReconciliacaoPanel() {
             })}
           </tbody>
         </table>
-        {!linhas.length && <p className="hint">Nenhuma usina com compensação medida nos meses fechados.</p>}
+        {!linhas.length && <p className="hint">No plant with measured compensation in the closed months.</p>}
       </div>
       <footer className="foot">
-        Previsto = receita da premissa (perfComp × P50 × perfOper). Realizado = receita recalculada com o <b>compensado limpo real</b> (MeterHub,
-        exclui geradora/glitch), até {fmtMes(fechadoAte)}. Desvio &gt; 10% destacado. A energia real substitui a premissa mês a mês; a Base de
-        Cálculo (R$/MWh) e a demanda são as mesmas — isolando o efeito da compensação.
+        Forecast = assumption revenue (perfComp × P50 × perfOper). Actual = revenue recalculated with the <b>real clean compensation</b> (MeterHub,
+        excludes generator/glitch), through {fmtMes(fechadoAte)}. Deviation &gt; 10% highlighted. The actual energy replaces the assumption month by month; the Calculation
+        Base (R$/MWh) and the demand are the same — isolating the effect of compensation.
       </footer>
     </>
   );
@@ -178,7 +178,7 @@ export default function ReconciliacaoPanel() {
 function Th({ k, sort, on, r, title, children }: { k: SortKey; sort: { key: SortKey; dir: 'asc' | 'desc' }; on: (k: SortKey) => void; r?: boolean; title?: string; children: ReactNode }) {
   const ativo = sort.key === k;
   return (
-    <th className={`${r ? 'r ' : ''}th-sort${ativo ? ' on' : ''}`} onClick={() => on(k)} title={title ?? 'Ordenar'}>
+    <th className={`${r ? 'r ' : ''}th-sort${ativo ? ' on' : ''}`} onClick={() => on(k)} title={title ?? 'Sort'}>
       {children}<span className="th-arrow">{ativo ? (sort.dir === 'asc' ? ' ▲' : ' ▼') : ' ⇅'}</span>
     </th>
   );

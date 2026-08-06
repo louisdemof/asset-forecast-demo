@@ -7,13 +7,13 @@ import { supabaseOn } from '../lib/supabase';
 import { hidratarMetodos, persistMetodo, persistDesconto } from '../data/db/hidratar';
 
 const GROSSUP_LABEL: Record<GrossUp, string> = {
-  nenhum: 'sem gross-up',
-  pis: 'gross-up PIS',
-  pis_icms: 'gross-up PIS + ICMS',
-  pis_icms_semdesc: 'gross-up PIS + ICMS (sem desconto)',
-  split: 'split (fórmula própria)',
-  plano: 'preço fixo R$/MWh',
-  fixo: 'valor fixo (hardcoded)',
+  nenhum: 'no gross-up',
+  pis: 'PIS gross-up',
+  pis_icms: 'PIS + ICMS gross-up',
+  pis_icms_semdesc: 'PIS + ICMS gross-up (no discount)',
+  split: 'split (own formula)',
+  plano: 'fixed price R$/MWh',
+  fixo: 'fixed value (hardcoded)',
 };
 // opções oferecidas no seletor (split exige função própria → fora do editor)
 const GROSSUP_OPTS: GrossUp[] = ['nenhum', 'pis', 'pis_icms', 'pis_icms_semdesc', 'plano', 'fixo'];
@@ -65,36 +65,36 @@ export default function MetodosPanel() {
   return (
     <section className="metodos">
       <div className="metodos-head">
-        <h3>Métodos de cálculo por cliente <span className="metodos-edit-tag">{podeEditar ? 'editável' : '🔒 leitura'}</span></h3>
+        <h3>Calculation methods by client <span className="metodos-edit-tag">{podeEditar ? 'editable' : '🔒 read-only'}</span></h3>
         {supabaseOn && !podeEditar && (
-          <p className="metodos-lock">🔒 Entre (botão no topo) para editar métodos e descontos. Sem login, é só leitura.</p>
+          <p className="metodos-lock">🔒 Sign in (button at top) to edit methods and discounts. Without login, it is read-only.</p>
         )}
         <p>
-          Receita = <b>Base de Cálculo × Energia Final − Demanda</b>, repartida em 4 parcelas fiscais.
-          Por cliente muda (1) o gross-up fiscal da base, (2) qual parcela absorve o resíduo e
-          (3) o <b>modelo comercial</b>. <b>Edite direto na tabela</b> — vale para todas as usinas do cliente e recalcula na hora.
+          Revenue = <b>Calculation Base × Final Energy − Demand</b>, split into 4 tax parcels.
+          Per client, this changes (1) the tax gross-up of the base, (2) which parcel absorbs the residual and
+          (3) the <b>commercial model</b>. <b>Edit directly in the table</b> — it applies to all of the client's plants and recalculates instantly.
         </p>
         <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-          <b>Faturamento compensada</b> (fatura sobre a compensação): todos os <b>AR</b> (TELMO, LOGIX, HIDRUS, TELCO) — medidos pela MeterHub —
-          + <b>NEXUS</b> e <b>OPERON</b>. &nbsp;·&nbsp; <b>Take-or-Pay</b> (fatura sobre a injeção, com piso da rampa): demais GC.
-          &nbsp;·&nbsp; <b>OPERON</b> opera a GC (Buriti) e a SolarCo paga <b>fee R$/MWh</b> à OPERON (custo). &nbsp;·&nbsp; <b>PPA/fixo</b>
-          (preço R$/MWh, independe da tarifa): PETRAX e BANCOR.
+          <b>Compensation billing</b> (bills on the compensation): all <b>AR</b> (TELMO, LOGIX, HIDRUS, TELCO) — measured by MeterHub —
+          + <b>NEXUS</b> and <b>OPERON</b>. &nbsp;·&nbsp; <b>Take-or-Pay</b> (bills on the injection, with ramp floor): other GC.
+          &nbsp;·&nbsp; <b>OPERON</b> operates the shared generation (Buriti) and SolarCo pays a <b>fee R$/MWh</b> to OPERON (cost). &nbsp;·&nbsp; <b>PPA/fixed</b>
+          (price R$/MWh, independent of the tariff): PETRAX and BANCOR.
         </p>
       </div>
       <div className="tablewrap">
         <table>
           <thead>
             <tr>
-              <th>Cliente</th>
-              <th>Modelo</th>
-              <th title="Compensada = fatura sobre a compensação (AR + NEXUS + OPERON). Take-or-Pay = fatura sobre a injeção (demais GC).">Faturamento</th>
-              <th title="Desconto = % sobre TE+TUSD. PPA = preço fixo R$/MWh (independe da tarifa).">Precificação</th>
-              <th>Gross-up da base</th>
-              <th>Fórmula da Base de Cálculo</th>
-              <th>Parcela residual</th>
-              <th title="Fee de operação de GC que a SolarCo PAGA ao operador (só OPERON), R$/MWh compensado. Custo, não desconto.">Fee op. <small>(R$/MWh)</small></th>
-              <th>Desconto <small>(clique p/ usinas)</small></th>
-              <th>Observação</th>
+              <th>Client</th>
+              <th>Model</th>
+              <th title="Compensation = bills on the compensation (AR + NEXUS + OPERON). Take-or-Pay = bills on the injection (other GC).">Billing</th>
+              <th title="Discount = % on TE+TUSD. PPA = fixed price R$/MWh (independent of the tariff).">Pricing</th>
+              <th>Base gross-up</th>
+              <th>Calculation Base formula</th>
+              <th>Residual parcel</th>
+              <th title="Shared-generation operation fee that SolarCo PAYS to the operator (OPERON only), R$/MWh compensated. Cost, not discount.">Op. fee <small>(R$/MWh)</small></th>
+              <th>Discount <small>(click for plants)</small></th>
+              <th>Note</th>
             </tr>
           </thead>
           <tbody>
@@ -105,8 +105,8 @@ export default function MetodosPanel() {
               const faixa = !d
                 ? '—'
                 : d.min === d.max
-                  ? `${pct(d.min)} · ${d.n} usina${d.n > 1 ? 's' : ''}`
-                  : `${pct(d.min)}–${pct(d.max)} · ${d.n} usinas`;
+                  ? `${pct(d.min)} · ${d.n} plant${d.n > 1 ? 's' : ''}`
+                  : `${pct(d.min)}–${pct(d.max)} · ${d.n} plants`;
               const amplo = d && d.max - d.min > 0.25;
               const comp = faturaPorCompensacao(tipo);
               const ppa = precificacaoDe(r) === 'ppa';
@@ -114,15 +114,15 @@ export default function MetodosPanel() {
               return (
                 <Fragment key={tipo}>
                 <tr className={padrao ? 'metodos-padrao' : ''}>
-                  <td className="strong">{padrao ? 'PADRÃO (demais)' : tipo}</td>
+                  <td className="strong">{padrao ? 'DEFAULT (others)' : tipo}</td>
                   <td>
                     <select className="metodo-sel" value={r.modelo} disabled={!podeEditar} onChange={(e) => setRegra(tipo, { modelo: e.target.value as ModeloComercial })}>
-                      <option value="AR">Autoconsumo Remoto</option>
-                      <option value="GC">Geração Compart.</option>
+                      <option value="AR">Remote Self-Consumption</option>
+                      <option value="GC">Shared Generation</option>
                     </select>
                   </td>
-                  <td><span className={`metodo-chip ${comp ? 'c-comp' : 'c-top'}`}>{comp ? 'Compensada' : 'Take-or-Pay'}</span></td>
-                  <td><span className={`metodo-chip ${ppa ? 'c-ppa' : 'c-desc'}`}>{ppa ? 'PPA / fixo' : 'Desconto %'}</span></td>
+                  <td><span className={`metodo-chip ${comp ? 'c-comp' : 'c-top'}`}>{comp ? 'Compensation' : 'Take-or-Pay'}</span></td>
+                  <td><span className={`metodo-chip ${ppa ? 'c-ppa' : 'c-desc'}`}>{ppa ? 'PPA / fixed' : 'Discount %'}</span></td>
                   <td>
                     <select className="metodo-sel" value={r.grossUp} disabled={!podeEditar} onChange={(e) => setRegra(tipo, { grossUp: e.target.value as GrossUp })}>
                       {GROSSUP_OPTS.map((g) => <option key={g} value={g}>{GROSSUP_LABEL[g]}</option>)}
@@ -132,7 +132,7 @@ export default function MetodosPanel() {
                   <td className="mono">{r.descricaoBase}</td>
                   <td>
                     <select className="metodo-sel" value={r.residual} disabled={!podeEditar} onChange={(e) => setRegra(tipo, { residual: e.target.value as LinhaResidual })}>
-                      <option value="guardaChuva">Guarda-Chuva</option>
+                      <option value="guardaChuva">Umbrella</option>
                       <option value="om">O&M</option>
                     </select>
                   </td>
@@ -141,7 +141,7 @@ export default function MetodosPanel() {
                       onChange={(e) => setRegra(tipo, { feeOperacaoMWh: +e.target.value || 0 })} />
                   </td>
                   <td className={amplo ? 'warn-amplo clickable' : 'muted clickable'}
-                    title={d ? 'Clique para ver o desconto por usina' : ''}
+                    title={d ? 'Click to see the discount per plant' : ''}
                     onClick={() => d && setAberto(open ? null : tipo)}>
                     {d ? (open ? '▾ ' : '▸ ') : ''}{faixa}{amplo ? ' ⚠' : ''}
                   </td>
@@ -153,9 +153,9 @@ export default function MetodosPanel() {
                   <tr className="metodos-usinas-row">
                     <td colSpan={10}>
                       <div className="metodos-usinas">
-                        <span className="mu-h">{tipo === 'PADRAO' ? 'PADRÃO' : tipo} · desconto por usina ({d.n}):</span>
+                        <span className="mu-h">{tipo === 'PADRAO' ? 'DEFAULT' : tipo} · discount per plant ({d.n}):</span>
                         {d.usinas.map((u) => (
-                          <label key={u.usina} className="mu-item" title="Editar o desconto desta usina">
+                          <label key={u.usina} className="mu-item" title="Edit this plant's discount">
                             <span className="mu-usina">{u.usina}</span>
                             <input type="number" step={0.5} value={+(u.desconto * 100).toFixed(2)} disabled={!podeEditar}
                               onChange={(e) => setDesc(u.usina, (+e.target.value || 0) / 100)} />%
@@ -172,11 +172,11 @@ export default function MetodosPanel() {
         </table>
       </div>
       <footer className="foot">
-        Metodologia por offtaker (vale para todas as usinas do cliente). Editar aqui muda a regra do
-        cliente inteiro e recalcula o forecast na hora. Overrides pontuais ficam no contrato da usina.
+        Methodology per offtaker (applies to all of the client's plants). Editing here changes the rule for the
+        entire client and recalculates the forecast instantly. One-off overrides stay in the plant's contract.
         <br />{supabaseOn
-          ? <><b>Persistência:</b> logado, as edições de método e desconto são salvas no Supabase (com dono, data e histórico de alterações). Viewer sem login continua no baseline.</>
-          : <><b>Protótipo:</b> as edições valem nesta sessão (Supabase não configurado neste ambiente).</>}
+          ? <><b>Persistence:</b> when logged in, method and discount edits are saved to Supabase (with owner, date and change history). A viewer without login stays on the baseline.</>
+          : <><b>Prototype:</b> edits apply for this session (Supabase not configured in this environment).</>}
       </footer>
     </section>
   );

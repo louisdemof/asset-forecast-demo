@@ -75,7 +75,7 @@ export default function GeracaoPanel() {
     for (const f of files) {
       let r = await parseFaturaGeradora(f);
       if (r.flag === 'senha') { // PDF protegido (ex.: COPEL) — pede a senha e reprocessa
-        const pw = window.prompt(`"${f.name}" está protegido por senha. Digite a senha do PDF:`);
+        const pw = window.prompt(`"${f.name}" is password-protected. Enter the PDF password:`);
         if (pw) r = await parseFaturaGeradora(f, pw);
       }
       out.push({ ...r, usina: casaUsina(r) });
@@ -91,16 +91,16 @@ export default function GeracaoPanel() {
 
   const aplicarFaturas = () => {
     const aplicadas = faturas.filter(prontaParaAplicar);
-    if (!aplicadas.length) { setMsg('Nenhuma fatura pronta para aplicar (falta usina, mês ou injeção válida).'); return; }
+    if (!aplicadas.length) { setMsg('No invoice ready to apply (missing plant, month or valid injection).'); return; }
     const r = importaMedicoes(aplicadas.map((f) => ({ usina: f.usina, mes: f.mes, injecao: f.injecao / 1000 }))); // kWh → MWh
     // persiste no Supabase (injeção/banco/demanda) quando autorizado
     if (podeFaturas) {
       Promise.allSettled(aplicadas.map((f) => upsertFatura(f))).then((res) => {
         const falhas = res.filter((x) => x.status === 'rejected').length;
-        setMsg(`Injeção aplicada de ${aplicadas.length} fatura(s) · ${r.atualizadas} usina(s). ${falhas ? `⚠ ${falhas} não salva(s) no banco.` : '✓ salvas no Supabase.'}`);
+        setMsg(`Injection applied from ${aplicadas.length} invoice(s) · ${r.atualizadas} plant(s). ${falhas ? `⚠ ${falhas} not saved to the database.` : '✓ saved to Supabase.'}`);
       });
     } else {
-      setMsg(`Injeção aplicada de ${aplicadas.length} fatura(s) · ${r.atualizadas} usina(s).${supabaseOn ? ' (entre para salvar no banco)' : ''}`);
+      setMsg(`Injection applied from ${aplicadas.length} invoice(s) · ${r.atualizadas} plant(s).${supabaseOn ? ' (log in to save to the database)' : ''}`);
     }
     setFaturas((prev) => prev.filter((f) => !prontaParaAplicar(f)));
   };
@@ -116,7 +116,7 @@ export default function GeracaoPanel() {
       { usina, mes: prev.mes, injecao: injPrev },
       { usina, mes: cur.mes, injecao: injCur },
     ]);
-    setMsg(`${usina}: injeção de ${fmtMes(cur.mes)} (dobrada) dividida → ${fmtMes(prev.mes)} ${mwh(injPrev)} + ${fmtMes(cur.mes)} ${mwh(injCur)} MWh (proporcional ao P50).`);
+    setMsg(`${usina}: ${fmtMes(cur.mes)} injection (doubled) split → ${fmtMes(prev.mes)} ${mwh(injPrev)} + ${fmtMes(cur.mes)} ${mwh(injCur)} MWh (proportional to P50).`);
   };
 
   const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,12 +124,12 @@ export default function GeracaoPanel() {
     if (!f) return;
     try {
       const rows = parseGeracaoCSV(await f.text());
-      if (!rows.length) { setMsg('CSV sem linhas reconhecidas — cabeçalho esperado: usina · mes · injecao [· inversor].'); return; }
+      if (!rows.length) { setMsg('CSV with no recognized rows — expected header: usina · mes · injecao [· inversor].'); return; }
       const r = importaMedicoes(rows);
-      const ne = r.naoEncontradas.length ? ` · ${r.naoEncontradas.length} usina(s) não casada(s): ${r.naoEncontradas.slice(0, 3).join(', ')}${r.naoEncontradas.length > 3 ? '…' : ''}` : '';
-      setMsg(`Importado: ${r.totalLinhas} linhas · ${r.atualizadas} usina(s) atualizada(s)${ne}.`);
+      const ne = r.naoEncontradas.length ? ` · ${r.naoEncontradas.length} plant(s) not matched: ${r.naoEncontradas.slice(0, 3).join(', ')}${r.naoEncontradas.length > 3 ? '…' : ''}` : '';
+      setMsg(`Imported: ${r.totalLinhas} rows · ${r.atualizadas} plant(s) updated${ne}.`);
     } catch (err) {
-      setMsg('Erro ao ler o CSV: ' + (err as Error).message);
+      setMsg('Error reading the CSV: ' + (err as Error).message);
     } finally {
       if (fileRef.current) fileRef.current.value = '';
     }
@@ -203,26 +203,26 @@ export default function GeracaoPanel() {
     setFaturas((prev) => prev.map((x, j) => (j === i ? { ...x, [campo]: Number.isFinite(v) ? v : 0 } : x)));
   };
 
-  if (!contratos.size) return <div className="state">Carregando…</div>;
+  if (!contratos.size) return <div className="state">Loading…</div>;
 
   return (
     <>
       <section className="kpis">
-        <Kpi label="GD GC (fora da MeterHub)" value={`${tot.nGC}`} sub="injeção vem da fatura da geradora" />
-        <Kpi label="Com fatura carregada" value={`${tot.nDado}`} sub={`de ${tot.nGC} · falta upload/OCR`} accent />
-        <Kpi label="Injeção faturada" value={`${rs0(tot.inj)} MWh`} sub="soma dos meses com dado" />
-        <Kpi label="Injeção × P50" value={pct(tot.dev)} sub="realidade vs engenharia" />
+        <Kpi label="GD GC (outside MeterHub)" value={`${tot.nGC}`} sub="injection comes from the generator invoice" />
+        <Kpi label="With invoice loaded" value={`${tot.nDado}`} sub={`of ${tot.nGC} · upload/OCR pending`} accent />
+        <Kpi label="Invoiced injection" value={`${rs0(tot.inj)} MWh`} sub="sum of months with data" />
+        <Kpi label="Injection × P50" value={pct(tot.dev)} sub="reality vs engineering" />
       </section>
 
       <div className="audit-head">
         <p>
-          Reconciliação da <b>geração</b> dos GD <b>GC fora da MeterHub</b> (take-or-pay <b>+</b> NEXUS/OPERON — ex. Litoral, Ventania).
-          Três fontes: <b>P50</b> (engenharia/PVsyst) × <b>Injeção</b> (fatura da distribuidora da geradora — <i>upload / OCR</i>, não está na MeterHub) × <b>Inversor</b> (O&M).
-          Os desvios apontam performance (P50×Inversor), perdas/rede (Inversor×Injeção) e impacto na receita (P50×Injeção).
+          Reconciliation of the <b>generation</b> of the <b>GC GD outside MeterHub</b> (take-or-pay <b>+</b> NEXUS/OPERON — e.g. Litoral, Ventania).
+          Three sources: <b>P50</b> (engineering/PVsyst) × <b>Injection</b> (generator's utility invoice — <i>upload / OCR</i>, not in MeterHub) × <b>Inverter</b> (O&M).
+          The deviations point to performance (P50×Inverter), losses/grid (Inverter×Injection) and revenue impact (P50×Injection).
         </p>
         <div className="audit-filtros">
           <input ref={pdfRef} type="file" accept=".pdf" multiple style={{ display: 'none' }} onChange={onPdf} />
-          <button className="btn-export" onClick={() => pdfRef.current?.click()}>{lendo ? '⏳ lendo…' : '⤒ Soltar fatura (PDF)'}</button>
+          <button className="btn-export" onClick={() => pdfRef.current?.click()}>{lendo ? '⏳ reading…' : '⤒ Drop invoice (PDF)'}</button>
           <input ref={fileRef} type="file" accept=".csv" style={{ display: 'none' }} onChange={onFile} />
           <button className="chip-btn" onClick={() => fileRef.current?.click()}>⤒ CSV</button>
           <button className="chip-btn" onClick={baixaTemplate}>⤓ Template</button>
@@ -236,7 +236,7 @@ export default function GeracaoPanel() {
         <div className="tablewrap" style={{ marginBottom: 14 }}>
           <table className="comp-t">
             <thead>
-              <tr><th>Arquivo</th><th>Layout</th><th>UC geradora</th><th>Mês</th><th className="r">Injeção (kWh)</th><th className="r">Banco (kWh)</th><th className="r" title="Demanda de geração da fatura">Demanda fat. (R$)</th><th className="r" title="Demanda UFV prevista no forecast (engenharia/contrato) p/ a usina e mês">Demanda prev. (R$)</th><th className="r" title="(fatura − forecast) ÷ forecast">Δ</th><th>Usina (destino)</th><th></th></tr>
+              <tr><th>File</th><th>Layout</th><th>Generator UC</th><th>Month</th><th className="r">Injection (kWh)</th><th className="r">Balance (kWh)</th><th className="r" title="Generation demand from the invoice">Inv. demand (R$)</th><th className="r" title="Forecast PV demand (engineering/contract) for the plant and month">Forecast demand (R$)</th><th className="r" title="(invoice − forecast) ÷ forecast">Δ</th><th>Plant (target)</th><th></th></tr>
             </thead>
             <tbody>
               {faturas.map((f, i) => (
@@ -246,11 +246,11 @@ export default function GeracaoPanel() {
                   <td className="mono">{f.uc || '—'}</td>
                   <td>{f.mes ? fmtMes(f.mes) : <span className="warn-text">?</span>}</td>
                   <td className="r"><input className="fat-edit strong" defaultValue={f.injecao > 0 ? n0(f.injecao) : ''} placeholder="—"
-                    onBlur={(e) => setCampoFatura(i, 'injecao', e.target.value)} title="Injeção (kWh) — editável; corrija se o OCR/parser errar" /></td>
+                    onBlur={(e) => setCampoFatura(i, 'injecao', e.target.value)} title="Injection (kWh) — editable; correct it if the OCR/parser is wrong" /></td>
                   <td className="r"><input className="fat-edit" defaultValue={f.banco > 0 ? n0(f.banco) : ''} placeholder="—"
-                    onBlur={(e) => setCampoFatura(i, 'banco', e.target.value)} title="Banco (kWh) — editável" /></td>
+                    onBlur={(e) => setCampoFatura(i, 'banco', e.target.value)} title="Balance (kWh) — editable" /></td>
                   <td className="r"><input className="fat-edit" defaultValue={f.demanda > 0 ? n0(f.demanda) : ''} placeholder="—"
-                    onBlur={(e) => setCampoFatura(i, 'demanda', e.target.value)} title="Demanda de geração (R$) — editável" /></td>
+                    onBlur={(e) => setCampoFatura(i, 'demanda', e.target.value)} title="Generation demand (R$) — editable" /></td>
                   {(() => {
                     const dp = demPrevDe(f.usina, f.mes);
                     const dv = dp && dp > 0 && f.demanda > 0 ? (f.demanda - dp) / dp : null;
@@ -261,15 +261,15 @@ export default function GeracaoPanel() {
                   })()}
                   <td>
                     <select value={f.usina} onChange={(e) => setFaturas((prev) => prev.map((x, j) => (j === i ? { ...x, usina: e.target.value } : x)))}>
-                      <option value="">— escolher —</option>
-                      <optgroup label={`${DOC_DISCO[f.doc] ?? 'distribuidora'} (sugeridas)`}>
+                      <option value="">— choose —</option>
+                      <optgroup label={`${DOC_DISCO[f.doc] ?? 'utility'} (suggested)`}>
                         {usinasDoDoc(f.doc).map((u) => <option key={u} value={u}>{u}</option>)}
                       </optgroup>
-                      <optgroup label="todas">
+                      <optgroup label="all">
                         {gcUsinas.map((u) => <option key={'all' + u} value={u}>{u}</option>)}
                       </optgroup>
                     </select>
-                    {[f.uc, ...(f.ucs ?? [])].some((id) => id && CADASTRO_UC[id]) && <span className="perf-badge" title="Casado pela UC da fatura (cadastro)" style={{ marginLeft: 4 }}>✓ UC</span>}
+                    {[f.uc, ...(f.ucs ?? [])].some((id) => id && CADASTRO_UC[id]) && <span className="perf-badge" title="Matched by the invoice UC (registration)" style={{ marginLeft: 4 }}>✓ UC</span>}
                     {f.flag && <span className="custo-op" title={f.flag}> ⚠</span>}
                   </td>
                   <td><button className="chip-btn" onClick={() => setFaturas((prev) => prev.filter((_, j) => j !== i))}>✕</button></td>
@@ -278,9 +278,9 @@ export default function GeracaoPanel() {
             </tbody>
           </table>
           <div style={{ padding: '8px 10px', display: 'flex', gap: 10, alignItems: 'center' }}>
-            <button className="btn-export" onClick={aplicarFaturas}>✓ Aplicar injeção nas usinas</button>
-            <button className="chip-btn" onClick={() => setFaturas([])}>limpar</button>
-            <span className="hint"><b>Injeção, banco e demanda são editáveis</b> (fundo amarelo) — corrija ali se o OCR/parser errar antes de aplicar. A injeção (kWh→MWh) alimenta o take-or-pay na Receita; <b>Demanda prev.</b> = demanda UFV do forecast. Ao aplicar, os valores (já corrigidos) são salvos no Supabase. ⚠ = conferir. Vale p/ GC fora da MeterHub (ex. Litoral/Ventania).</span>
+            <button className="btn-export" onClick={aplicarFaturas}>✓ Apply injection to the plants</button>
+            <button className="chip-btn" onClick={() => setFaturas([])}>clear</button>
+            <span className="hint"><b>Injection, balance and demand are editable</b> (yellow background) — correct them there if the OCR/parser is wrong before applying. The injection (kWh→MWh) feeds the take-or-pay in Revenue; <b>Forecast demand</b> = PV demand from the forecast. On apply, the (already corrected) values are saved to Supabase. ⚠ = review. Applies to GC outside MeterHub (e.g. Litoral/Ventania).</span>
           </div>
         </div>
       )}
@@ -290,12 +290,12 @@ export default function GeracaoPanel() {
           <thead>
             <tr>
               <th className="chev-col"></th>
-              <th>Usina</th><th>Cliente</th><th className="r" title="Nº de meses com fatura da geradora carregada">Meses c/ fatura</th>
-              <th className="r" title="P50 bruto (PVsyst) — o MESMO valor da base, da aba PVsyst e da Receita. Somado sobre os meses com fatura (ou o ano todo, se ainda sem fatura).">P50 (MWh)*</th>
-              <th className="r" title="Injeção REAL da fatura da geradora (kWh→MWh), somada sobre os meses com fatura">Injeção (MWh)</th>
-              <th className="r" title="Geração medida pelos inversores (O&M)">Inversor (MWh)</th>
-              <th className="r" title="Desvio: (Injeção real − P50 esperado) ÷ P50. Negativo = injetou MENOS que a engenharia previu.">Inj vs P50</th>
-              <th className="r" title="Inversor (gerado) vs Injeção (chegou na rede) — perdas/medição">Inv vs Inj</th>
+              <th>Plant</th><th>Client</th><th className="r" title="Number of months with generator invoice loaded">Months w/ invoice</th>
+              <th className="r" title="Gross P50 (PVsyst) — the SAME value as the base, the PVsyst tab and Revenue. Summed over the months with an invoice (or the whole year, if still without an invoice).">P50 (MWh)*</th>
+              <th className="r" title="REAL injection from the generator invoice (kWh→MWh), summed over the months with an invoice">Injection (MWh)</th>
+              <th className="r" title="Generation measured by the inverters (O&M)">Inverter (MWh)</th>
+              <th className="r" title="Deviation: (real injection − expected P50) ÷ P50. Negative = injected LESS than engineering predicted.">Inj vs P50</th>
+              <th className="r" title="Inverter (generated) vs Injection (reached the grid) — losses/metering">Inv vs Inj</th>
             </tr>
           </thead>
           <tbody>
@@ -310,7 +310,7 @@ export default function GeracaoPanel() {
                     <td className="chev-col">{open ? '▾' : '▸'}</td>
                     <td className="strong">{l.projeto}</td>
                     <td className="muted">{l.cliente}</td>
-                    <td className="r">{semDado ? <span className="audit-tag y">sem fatura</span> : l.nDado}</td>
+                    <td className="r">{semDado ? <span className="audit-tag y">no invoice</span> : l.nDado}</td>
                     <td className="r muted">{mwh(l.p50)}</td>
                     <td className="r strong">{mwh(l.inj)}</td>
                     <td className="r">{mwh(l.inv)}</td>
@@ -323,7 +323,7 @@ export default function GeracaoPanel() {
                         <div style={{ padding: '8px 14px' }}>
                           <table className="uc-mes-table">
                             <thead>
-                              <tr><th>Mês</th><th className="r">P50</th><th className="r">Injeção</th><th className="r">Inversor</th><th className="r" title="(Injeção − P50) ÷ P50">Inj vs P50</th><th className="r" title="(Inversor − Injeção) ÷ Injeção">Inv vs Inj</th></tr>
+                              <tr><th>Month</th><th className="r">P50</th><th className="r">Injection</th><th className="r">Inverter</th><th className="r" title="(Injection − P50) ÷ P50">Inj vs P50</th><th className="r" title="(Inverter − Injection) ÷ Injection">Inv vs Inj</th></tr>
                             </thead>
                             <tbody>
                               {l.meses.filter((m) => m.inj != null || m.inv != null).map((m) => {
@@ -338,11 +338,11 @@ export default function GeracaoPanel() {
                                   <tr key={m.mes}>
                                     <td className="mono">{fmtMes(m.mes)}</td>
                                     <td className="r muted">{mwh(m.p50)}</td>
-                                    <td className="r strong">{mwh(m.inj)}{dobrado && <span className="custo-op" title={`Injeção ~2× o P50 e ${prev ? fmtMes(prev.mes) : ''} sem fatura — provável mês dobrado pela distribuidora`}> ⚠2×</span>}</td>
+                                    <td className="r strong">{mwh(m.inj)}{dobrado && <span className="custo-op" title={`Injection ~2× the P50 and ${prev ? fmtMes(prev.mes) : ''} without an invoice — likely month doubled by the utility`}> ⚠2×</span>}</td>
                                     <td className="r">{mwh(m.inv)}</td>
                                     <td className={`r ${dPI == null ? 'muted' : Math.abs(dPI) > 0.1 ? 'warn-text' : ''}`}>{pct(dPI)}</td>
                                     <td className={`r ${dVI == null ? 'muted' : Math.abs(dVI) > 0.05 ? 'warn-text' : ''}`}>{pct(dVI)}
-                                      {dobrado && prev && <button className="chip-btn" style={{ marginLeft: 6 }} title={`Dividir a injeção entre ${fmtMes(prev.mes)} e ${fmtMes(m.mes)}, proporcional ao P50`} onClick={() => ajustarDobrado(l.projeto, prev, m)}>↔ dividir c/ {fmtMes(prev.mes)}</button>}
+                                      {dobrado && prev && <button className="chip-btn" style={{ marginLeft: 6 }} title={`Split the injection between ${fmtMes(prev.mes)} and ${fmtMes(m.mes)}, proportional to P50`} onClick={() => ajustarDobrado(l.projeto, prev, m)}>↔ split w/ {fmtMes(prev.mes)}</button>}
                                     </td>
                                   </tr>
                                 );
@@ -360,10 +360,10 @@ export default function GeracaoPanel() {
         </table>
       </div>
       <footer className="foot">
-        <b>*P50</b> e <b>Injeção</b> são somados <b>sobre os mesmos meses com fatura</b> (por isso a comparação é justa); usinas ainda <b>sem fatura</b>
-        mostram o P50 do ano todo como referência. P50 = <b>P50 bruto (PVsyst)</b>, o mesmo da base / aba PVsyst / Receita. Injeção = fatura da geradora (<b>upload</b>;
-        GC não vem da MeterHub). Inversor = O&M. <b>Inj vs P50</b> = (Injeção − P50) ÷ P50 (negativo = injetou menos que o previsto);
-        <b>Inv vs Inj</b> = (Inversor − Injeção) ÷ Injeção. Desvios &gt; 10% (Inj vs P50) e &gt; 5% (Inv vs Inj) destacados. A injeção alimenta o take-or-pay na Receita.
+        <b>*P50</b> and <b>Injection</b> are summed <b>over the same months with an invoice</b> (that's why the comparison is fair); plants still <b>without an invoice</b>
+        show the whole-year P50 as a reference. P50 = <b>gross P50 (PVsyst)</b>, the same as the base / PVsyst tab / Revenue. Injection = generator invoice (<b>upload</b>;
+        GC does not come from MeterHub). Inverter = O&M. <b>Inj vs P50</b> = (Injection − P50) ÷ P50 (negative = injected less than predicted);
+        <b>Inv vs Inj</b> = (Inverter − Injection) ÷ Injection. Deviations &gt; 10% (Inj vs P50) and &gt; 5% (Inv vs Inj) highlighted. The injection feeds the take-or-pay in Revenue.
       </footer>
     </>
   );
