@@ -1,3 +1,0 @@
-# Dados sensíveis em texto puro — NUNCA enviar. Só o data.enc criptografado é servido.
-public/data/
-scripts/pack-data.mjs
