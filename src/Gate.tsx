@@ -20,7 +20,7 @@ export default function Gate() {
   return (
     <div className="gate">
       <div className="gate-card">
-        <img className="gate-logo" src={`${import.meta.env.BASE_URL}solarco_logo_navy.svg`} alt="SolarCo" />
+        <img className="gate-logo" src={`${import.meta.env.BASE_URL}assetperf_logo_navy.svg`} alt="AssetPerf" />
         <h1 className="gate-title">Asset Forecast</h1>
         <p className="gate-sub">Solar revenue forecasting &amp; reconciliation platform</p>
         <span className="gate-demo-tag">DEMO · synthetic data</span>

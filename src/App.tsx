@@ -192,7 +192,7 @@ export default function App() {
   return (
     <div className="app">
       <div className="topband">
-        <img className="topband-logo" src={`${import.meta.env.BASE_URL}SolarCo_logo.svg`} alt="SolarCo" />
+        <img className="topband-logo" src={`${import.meta.env.BASE_URL}assetperf_logo.svg`} alt="AssetPerf" />
         <div className="topband-actions">
           <FormulasHelp />
           {podeAdmin && (
