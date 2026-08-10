@@ -1,14 +1,14 @@
 {
- "fetchedAt": "2026-07-31T13:08:02.409359+00:00",
- "geradoAneel": "2026-07-31",
+ "fetchedAt": "2026-08-10T07:27:32.093053+00:00",
+ "geradoAneel": "2026-08-09",
  "distribuidoras": [
   {
    "sigAgente": "CASTRO-DIS",
-   "tusd": 424.82,
-   "te": 256.88,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.491, DE 22 DE JULHO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-07-29",
+   "tusd": 467.21,
+   "te": 301.96,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 2.813, DE 30 DE JULHO DE 2026",
+   "vigInicio": "2026-07-30",
+   "vigFim": "2027-07-29",
    "cnpj": "30460297000139"
   },
   {
@@ -76,11 +76,11 @@
   },
   {
    "sigAgente": "CELETRO",
-   "tusd": 490.4,
-   "te": 260.93,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.492, DE 22 DE JULHO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-07-29",
+   "tusd": 637.6,
+   "te": 331.65,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 2.812, DE 30 DE JULHO DE 2026",
+   "vigInicio": "2026-07-30",
+   "vigFim": "2027-07-29",
    "cnpj": "87776043000141"
   },
   {
@@ -130,11 +130,11 @@
   },
   {
    "sigAgente": "CERAL-DIS",
-   "tusd": 476.01,
-   "te": 160.39,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.493, DE 22 DE JULHO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-07-29",
+   "tusd": 557.67,
+   "te": 172.97,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 2.811, DE 30 DE JULHO DE 2026",
+   "vigInicio": "2026-07-30",
+   "vigFim": "2027-07-29",
    "cnpj": "10532365000110"
   },
   {
@@ -184,11 +184,11 @@
   },
   {
    "sigAgente": "CERFOX",
-   "tusd": 559.49,
-   "te": 242.91,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.501, DE 22 DE JULHO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-07-29",
+   "tusd": 618.14,
+   "te": 222.63,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 2.840, DE 30 DE JULHO DE 2026",
+   "vigInicio": "2026-07-30",
+   "vigFim": "2027-07-29",
    "cnpj": "97505838000179"
   },
   {
@@ -220,11 +220,11 @@
   },
   {
    "sigAgente": "CERILUZ",
-   "tusd": 356.15,
-   "te": 195.53,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.494, DE 22 DE JULHO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-07-29",
+   "tusd": 414.37,
+   "te": 234.84,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 2.854, DE 30 DE JULHO DE 2026",
+   "vigInicio": "2026-07-30",
+   "vigFim": "2027-07-29",
    "cnpj": "87656989000174"
   },
   {
@@ -247,11 +247,11 @@
   },
   {
    "sigAgente": "CERIS",
-   "tusd": 679.15,
-   "te": 300.88,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.502, DE 22 DE JULHO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-07-29",
+   "tusd": 754.29,
+   "te": 360.83,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 2.814, DE 30 DE JULHO DE 2026",
+   "vigInicio": "2026-07-30",
+   "vigFim": "2027-07-29",
    "cnpj": "57384943000182"
   },
   {
@@ -265,11 +265,11 @@
   },
   {
    "sigAgente": "CERMISSÕES",
-   "tusd": 493.17,
-   "te": 220.81,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.495, DE 22 DE JULHO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-07-29",
+   "tusd": 619.34,
+   "te": 271.55,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 2.815, DE 30 DE JULHO DE 2026",
+   "vigInicio": "2026-07-30",
+   "vigFim": "2027-07-29",
    "cnpj": "97081434000103"
   },
   {
@@ -346,29 +346,29 @@
   },
   {
    "sigAgente": "CERTAJA",
-   "tusd": 379.24,
-   "te": 254.07,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.496, DE 22 DE JULHO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-07-29",
+   "tusd": 498.46,
+   "te": 281.96,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 2.822, DE 30 DE JULHO DE 2026",
+   "vigInicio": "2026-07-30",
+   "vigFim": "2027-07-29",
    "cnpj": "97839922000129"
   },
   {
    "sigAgente": "CERTEL ENERGIA",
-   "tusd": 508.47,
-   "te": 227.85,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.504, DE 22 DE JULHO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-07-29",
+   "tusd": 587.65,
+   "te": 325.85,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 2.842, DE 30 DE JULHO DE 2026",
+   "vigInicio": "2026-07-30",
+   "vigFim": "2027-07-29",
    "cnpj": "09257558000121"
   },
   {
    "sigAgente": "CERTHIL",
-   "tusd": 373.31,
-   "te": 233.08,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.497, DE 22 DE JULHO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-07-29",
+   "tusd": 412.85,
+   "te": 317.08,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 2.844, DE 30 DE JULHO DE 2026",
+   "vigInicio": "2026-07-30",
+   "vigFim": "2027-07-29",
    "cnpj": "98042963000152"
   },
   {
@@ -481,11 +481,11 @@
   },
   {
    "sigAgente": "COOPERLUZ",
-   "tusd": 246.0,
-   "te": 231.32,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.498, DE 22 DE JULHO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-07-29",
+   "tusd": 297.69,
+   "te": 324.33,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 2.823, DE 30 DE JULHO DE 2026",
+   "vigInicio": "2026-07-30",
+   "vigFim": "2027-07-29",
    "cnpj": "95824322000161"
   },
   {
@@ -544,11 +544,11 @@
   },
   {
    "sigAgente": "COPREL",
-   "tusd": 344.49,
-   "te": 259.69,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.499, DE 22 DE JULHO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-07-29",
+   "tusd": 399.81,
+   "te": 316.51,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 2.825, DE 30 DE JULHO DE 2026",
+   "vigInicio": "2026-07-30",
+   "vigFim": "2027-07-29",
    "cnpj": "90660754000160"
   },
   {
@@ -625,11 +625,11 @@
   },
   {
    "sigAgente": "CRELUZ-D",
-   "tusd": 440.34,
-   "te": 208.18,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.505, DE 22 DE JULHO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-07-29",
+   "tusd": 543.71,
+   "te": 241.9,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 2.847, DE 30 DE JULHO DE 2026",
+   "vigInicio": "2026-07-30",
+   "vigFim": "2027-07-29",
    "cnpj": "91950261000128"
   },
   {
@@ -697,11 +697,11 @@
   },
   {
    "sigAgente": "EDP ES",
-   "tusd": 468.63,
-   "te": 320.68,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.508, DE 5 DE AGOSTO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-08-06",
+   "tusd": 506.32,
+   "te": 337.39,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.600, DE 31 DE JULHO DE 2026",
+   "vigInicio": "2026-08-07",
+   "vigFim": "2027-08-06",
    "cnpj": "28152650000171"
   },
   {
