@@ -1,6 +1,6 @@
 {
- "fetchedAt": "2026-08-10T07:27:32.093053+00:00",
- "geradoAneel": "2026-08-09",
+ "fetchedAt": "2026-08-17T06:49:19.760355+00:00",
+ "geradoAneel": "2026-08-16",
  "distribuidoras": [
   {
    "sigAgente": "CASTRO-DIS",
@@ -967,11 +967,11 @@
   },
   {
    "sigAgente": "Não Informado",
-   "tusd": 648.73,
-   "te": 271.93,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.500, DE 22 DE JULHO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-07-29",
+   "tusd": 726.42,
+   "te": 327.38,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 2.845, DE 30 DE JULHO DE 2026",
+   "vigInicio": "2026-07-30",
+   "vigFim": "2027-07-29",
    "cnpj": "89435598000155"
   },
   {
