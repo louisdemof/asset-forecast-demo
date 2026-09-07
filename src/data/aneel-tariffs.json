@@ -1,6 +1,6 @@
 {
- "fetchedAt": "2026-08-31T12:40:55.342410+00:00",
- "geradoAneel": "2026-08-31",
+ "fetchedAt": "2026-09-07T11:33:52.938262+00:00",
+ "geradoAneel": "2026-09-07",
  "distribuidoras": [
   {
    "sigAgente": "CASTRO-DIS",
@@ -643,11 +643,11 @@
   },
   {
    "sigAgente": "DCELT",
-   "tusd": 373.77,
-   "te": 309.77,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.515, DE 26 DE AGOSTO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-08-28",
+   "tusd": 414.04,
+   "te": 345.71,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.380, DE 28 DE AGOSTO DE 2026",
+   "vigInicio": "2026-08-29",
+   "vigFim": "2027-08-28",
    "cnpj": "83855973000130"
   },
   {
@@ -832,11 +832,11 @@
   },
   {
    "sigAgente": "EPB",
-   "tusd": 419.33,
-   "te": 256.32,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.518, DE 26 DE AGOSTO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-08-27",
+   "tusd": 460.32,
+   "te": 249.38,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.603, DE 28 DE AGOSTO DE 2026",
+   "vigInicio": "2026-08-28",
+   "vigFim": "2027-08-27",
    "cnpj": "09095183000140"
   },
   {
