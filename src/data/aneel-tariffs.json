@@ -1,6 +1,6 @@
 {
- "fetchedAt": "2026-09-28T12:53:45.478131+00:00",
- "geradoAneel": "2026-09-28",
+ "fetchedAt": "2026-10-05T13:34:51.886033+00:00",
+ "geradoAneel": "2026-10-05",
  "distribuidoras": [
   {
    "sigAgente": "CASTRO-DIS",
@@ -769,11 +769,11 @@
   },
   {
    "sigAgente": "ELFSM",
-   "tusd": 441.98,
-   "te": 303.39,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.519, DE 16 DE SETEMBRO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-09-21",
+   "tusd": 490.53,
+   "te": 334.36,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.678, DE 22 DE SETEMBRO DE 2026",
+   "vigInicio": "2026-09-22",
+   "vigFim": "2027-09-21",
    "cnpj": "27485069000109"
   },
   {
