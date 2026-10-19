@@ -1,6 +1,6 @@
 {
- "fetchedAt": "2026-10-12T14:24:15.735520+00:00",
- "geradoAneel": "2026-10-12",
+ "fetchedAt": "2026-10-19T12:06:56.217604+00:00",
+ "geradoAneel": "2026-10-19",
  "distribuidoras": [
   {
    "sigAgente": "CASTRO-DIS",
@@ -868,11 +868,11 @@
   },
   {
    "sigAgente": "EQUATORIAL PA",
-   "tusd": 692.08,
-   "te": 286.22,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.507, DE 5 DE AGOSTO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-12-31",
+   "tusd": 754.3,
+   "te": 288.92,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.608, DE 18 DE SETEMBRO DE 2026",
+   "vigInicio": "2026-09-18",
+   "vigFim": "2027-08-06",
    "cnpj": "04895728000180"
   },
   {
@@ -1020,15 +1020,6 @@
    "cnpj": "89889604000144"
   },
   {
-   "sigAgente": "ÂMBAR ENERGIA RR",
-   "tusd": 444.78,
-   "te": 344.69,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.565, DE 20 DE JANEIRO DE 2026",
-   "vigInicio": "2026-01-25",
-   "vigFim": "2027-01-24",
-   "cnpj": "02341470000144"
-  },
-  {
    "sigAgente": "Âmbar Amazonas",
    "tusd": 594.6,
    "te": 281.11,
@@ -1036,6 +1027,15 @@
    "vigInicio": "2026-05-26",
    "vigFim": "2027-05-25",
    "cnpj": "02341467000120"
+  },
+  {
+   "sigAgente": "Âmbar Roraima",
+   "tusd": 444.78,
+   "te": 344.69,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.565, DE 20 DE JANEIRO DE 2026",
+   "vigInicio": "2026-01-25",
+   "vigFim": "2027-01-24",
+   "cnpj": "02341470000144"
   }
  ]
 }
