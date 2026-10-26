@@ -1,6 +1,6 @@
 {
- "fetchedAt": "2026-10-19T12:06:56.217604+00:00",
- "geradoAneel": "2026-10-19",
+ "fetchedAt": "2026-10-26T12:14:56.075436+00:00",
+ "geradoAneel": "2026-10-26",
  "distribuidoras": [
   {
    "sigAgente": "CASTRO-DIS",
@@ -609,8 +609,8 @@
    "sigAgente": "CPFL-PAULISTA",
    "tusd": 449.25,
    "te": 290.2,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.579, DE 22 DE ABRIL DE 2026",
-   "vigInicio": "2026-04-08",
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.579, DE 24 DE ABRIL DE 2026",
+   "vigInicio": "2026-04-24",
    "vigFim": "2027-04-07",
    "cnpj": "33050196000188"
   },
@@ -665,7 +665,7 @@
    "te": 221.14,
    "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.548, DE 18 DE NOVEMBRO DE 2025",
    "vigInicio": "2026-01-01",
-   "vigFim": "2026-11-17",
+   "vigFim": "2026-11-21",
    "cnpj": "23664303000104"
   },
   {
@@ -790,8 +790,8 @@
    "tusd": 662.01,
    "te": 324.59,
    "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.582, DE 22 DE ABRIL DE 2026",
-   "vigInicio": "2026-04-22",
-   "vigFim": "2027-04-21",
+   "vigInicio": "2026-04-24",
+   "vigFim": "2027-04-07",
    "cnpj": "15413826000150"
   },
   {
@@ -917,7 +917,7 @@
    "te": 309.51,
    "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.323, DE 24 DE AGOSTO DE 2026",
    "vigInicio": "2026-08-26",
-   "vigFim": "2027-08-25",
+   "vigFim": "2027-07-03",
    "cnpj": "25086034000171"
   },
   {
@@ -949,11 +949,11 @@
   },
   {
    "sigAgente": "Neoenergia Brasília",
-   "tusd": 423.92,
-   "te": 402.8,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.542, DE 21 DE OUTUBRO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-10-21",
+   "tusd": 453.47,
+   "te": 380.82,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.614, DE 22 DE OUTUBRO DE 2026",
+   "vigInicio": "2026-10-22",
+   "vigFim": "2027-10-21",
    "cnpj": "07522669000192"
   },
   {
@@ -979,8 +979,8 @@
    "tusd": 457.17,
    "te": 310.85,
    "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.606, DE 26 DE AGOSTO DE 2026",
-   "vigInicio": "2026-06-26",
-   "vigFim": "2027-06-25",
+   "vigInicio": "2026-08-26",
+   "vigFim": "2027-08-25",
    "cnpj": "79850574000109"
   },
   {
