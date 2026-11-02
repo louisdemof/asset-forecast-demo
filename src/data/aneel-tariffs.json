@@ -1,6 +1,6 @@
 {
- "fetchedAt": "2026-10-26T12:14:56.075436+00:00",
- "geradoAneel": "2026-10-26",
+ "fetchedAt": "2026-11-02T14:44:50.537699+00:00",
+ "geradoAneel": "2026-11-02",
  "distribuidoras": [
   {
    "sigAgente": "CASTRO-DIS",
@@ -616,11 +616,11 @@
   },
   {
    "sigAgente": "CPFL-PIRATINING",
-   "tusd": 395.64,
-   "te": 344.05,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.543, DE 21 DE OUTUBRO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-10-22",
+   "tusd": 430.4,
+   "te": 328.42,
+   "resolution": "DESPACHO Nº 3.612, DE 16 DE OUTUBRO DE 2026",
+   "vigInicio": "2026-10-23",
+   "vigFim": "2027-10-22",
    "cnpj": "04172213000151"
   },
   {
@@ -706,11 +706,11 @@
   },
   {
    "sigAgente": "EDP SP",
-   "tusd": 456.67,
-   "te": 330.03,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.541, DE 14 DE OUTUBRO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-10-22",
+   "tusd": 469.44,
+   "te": 332.24,
+   "resolution": "DESPACHO Nº 3.611, DE 16 DE OUTUBRO DE 2026",
+   "vigInicio": "2026-10-23",
+   "vigFim": "2027-10-22",
    "cnpj": "02302100000106"
   },
   {
@@ -850,11 +850,11 @@
   },
   {
    "sigAgente": "EQUATORIAL GO",
-   "tusd": 567.67,
-   "te": 324.14,
-   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.544, DE 21 DE OUTUBRO DE 2025",
-   "vigInicio": "2026-01-01",
-   "vigFim": "2026-10-21",
+   "tusd": 617.38,
+   "te": 337.01,
+   "resolution": "RESOLUÇÃO HOMOLOGATÓRIA Nº 3.613, DE 22 DE OUTUBRO DE 2026",
+   "vigInicio": "2026-10-22",
+   "vigFim": "2027-10-21",
    "cnpj": "01543032000104"
   },
   {
