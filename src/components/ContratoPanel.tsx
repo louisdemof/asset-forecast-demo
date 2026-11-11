@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
+import { PlantMonthly } from './demo/PlantMonthly';
 import { useForecastStore } from '../store/forecastStore';
-import { rodaContrato, type Contrato, type ClienteTipo, type LinhaCusto, type ModoCusto, type AlocacaoMes } from '../engine/contrato';
+import { rodaContrato, type Contrato, type ClienteTipo, type LinhaCusto, type ModoCusto } from '../engine/contrato';
 import { REGRAS_CLIENTE } from '../engine/clientes';
 import { fmtMes as mmYY } from '../lib/date';
 import type { TarifaDisco } from '../engine/receita';
@@ -16,50 +17,6 @@ function addMeses(iso: string | undefined, n: number): string {
   if (!y || !m) return '';
   const d = new Date(Date.UTC(y, m - 1 + n, 1));
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
-}
-
-/** Visão mensal da usina: 12 meses de forecast; clique num mês abre o detalhe. */
-function ReceitaMensalUsina({ meses }: { meses: AlocacaoMes[] }) {
-  const [sel, setSel] = useState<number | null>(null);
-  const d = sel != null ? meses[sel] : null;
-  return (
-    <section className="cbloco mensal-usina">
-      <h5>Monthly revenue <span className="muted" style={{ fontWeight: 400 }}>· click a month to see details</span></h5>
-      <table className="mes-table">
-        <thead><tr><th>Month</th><th>Status</th><th className="r">Final Energy</th><th className="r">Comp.</th><th className="r">Revenue</th></tr></thead>
-        <tbody>
-          {meses.map((m, i) => (
-            <tr key={m.mes} className={`clickable ${sel === i ? 'on' : ''}`} onClick={() => setSel(sel === i ? null : i)}>
-              <td className="strong">{mmYY(m.mes)}</td>
-              <td>{m.status === 'COD' ? <span className="badge ok">COD</span> : <span className="badge">const.</span>}</td>{/* 'const.' = construction, display abbrev */}
-              <td className="r muted">{mwh(m.energiaFinal)}</td>
-              <td className="r">{(m.perfComp * 100).toFixed(0)}%</td>
-              <td className="r strong">{brl(m.receitaTotal)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {d && (
-        <div className="mes-detalhe">
-          <div className="mes-detalhe-h"><b>{mmYY(d.mes)}</b> · {d.status}</div>
-          <div className="mes-grid">
-            <span>P50<b>{mwh(d.p50)}</b></span>
-            <span>Oper. Perf<b>{(d.perfOper * 100).toFixed(0)}%</b></span>
-            <span>Comp. Perf<b>{(d.perfComp * 100).toFixed(0)}%</b></span>
-            <span>Final Energy<b>{mwh(d.energiaFinal)}</b></span>
-            <span>Calculation Base<b>{d.base != null ? `${d.base.toFixed(0)} R$/MWh` : '—'}</b></span>
-            <span>Gross Revenue<b>{brl(d.receitaBruta)}</b></span>
-            <span>PV Demand<b>{brl(d.demanda)}</b></span>
-            <span>Equipment Lease<b>{brl(d.equipamentos)}</b></span>
-            <span>O&amp;M<b>{brl(d.om)}</b></span>
-            <span>Property<b>{brl(d.imovel)}</b></span>
-            <span>Umbrella<b>{brl(d.guardaChuva)}</b></span>
-            <span className="rt">Total Revenue<b>{brl(d.receitaTotal)}</b></span>
-          </div>
-        </div>
-      )}
-    </section>
-  );
 }
 
 const LINHAS: { key: 'equipamentos' | 'om' | 'imovel' | 'guardaChuva'; label: string; cor: string }[] = [
@@ -414,9 +371,9 @@ export default function ContratoPanel({ usina }: { usina: string }) {
             </tbody>
           </table>
 
-          <ReceitaMensalUsina meses={resumo.meses} />
         </div>
       </div>
+      <PlantMonthly usina={usina} meses={resumo.meses} />
     </div>
   );
 }

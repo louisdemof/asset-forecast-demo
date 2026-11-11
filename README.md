@@ -5,10 +5,9 @@ generation portfolio (Brazil's SCEE / net-metering scheme). It turns per-plant
 tariffs, generation curves and commercial contracts into a month-by-month revenue
 forecast, then reconciles that forecast against real distributor invoices.
 
-> **This is a portfolio demo.** All data is **synthetic** — client names, plant
-> names, meter/UC numbers and figures are invented. It ships with **no login and
-> no backend** (edits are session-only). The production version runs behind an
-> encrypted access gate with a Supabase backend (auth, RBAC, audit, persistence).
+> **This is a demo.** Every plant, client, meter and figure is invented by
+> `scripts/generate-synthetic.mjs` from a fixed seed. Published ANEEL tariffs are
+> the only real input. There is no login or backend, and edits last for the session.
 
 **Live demo:** _add your Vercel URL here_
 
@@ -56,4 +55,4 @@ Build: `npm run build` → static output in `dist/` (deploys to any static host 
 - `src/components/` — the panels (Revenue, Generation, Compensation, Methods,
   Reconciliation, plant-onboarding wizard).
 - `src/store/forecastStore.ts` — Zustand store; the engine recomputes on every edit.
-- The UI is in Portuguese (the tool's working language).
+- Each new screen is labelled as in production, partly in production, or a demo concept.

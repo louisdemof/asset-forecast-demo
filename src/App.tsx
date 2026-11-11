@@ -1,4 +1,9 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { BillingFinancePanel, CreditBankPanel, EvolutionPanel, ProvisionPanel } from './components/demo/ForecastFinance';
+import { PerformancePanel, PipelinePanel, TicketsPanel } from './components/demo/Operations';
+import { ReadinessPanel, RegisterPanel } from './components/demo/Platform';
+import { DataCentrePanel } from './components/demo/DataCentre';
+import { Client360Panel, ClientPortalPanel, ServiceDeskPanel, ServiceLevelsPanel } from './components/demo/Portal';
 import { useForecastStore } from './store/forecastStore';
 import { fimContrato } from './engine/comercial';
 import { ColHint } from './components/ColHint';
@@ -87,7 +92,19 @@ export default function App() {
   const { usinas, rows, contratos, loading, error, load } = useForecastStore();
   const [busca, setBusca] = useState('');
   const [expandida, setExpandida] = useState<string | null>(null);
-  const [aba, setAba] = useState<'receita' | 'pvsyst' | 'tarifas' | 'metodos' | 'alertas' | 'compensacao' | 'auditoria' | 'reconciliacao' | 'geracao' | 'admin'>('receita');
+  type Aba = 'overview' | 'receita' | 'evolucao' | 'pvsyst' | 'tarifas' | 'metodos' | 'register' | 'pipeline' | 'performance' | 'tickets' | 'alertas' | 'compensacao' | 'auditoria' | 'geracao' | 'banco' | 'reconciliacao' | 'provisao' | 'billing' | 'portal' | 'desk' | 'clients' | 'sla' | 'dados' | 'admin';
+  const [aba, setAba] = useState<Aba>('overview');
+  const GRUPOS: { id: string; rotulo: string; abas: { id: Aba; rotulo: string }[] }[] = [
+    { id: 'overview', rotulo: 'Overview', abas: [{ id: 'overview', rotulo: 'Overview' }] },
+    { id: 'forecast', rotulo: 'Forecast', abas: [{ id: 'receita', rotulo: 'Revenue' }, { id: 'evolucao', rotulo: 'Forecast evolution' }] },
+    { id: 'assets', rotulo: 'Assets', abas: [{ id: 'register', rotulo: 'Asset register' }, { id: 'pvsyst', rotulo: 'Generation (PVsyst)' }, { id: 'tarifas', rotulo: 'Tariffs & Adjustments' }, { id: 'metodos', rotulo: 'Methods by client' }] },
+    { id: 'ops', rotulo: 'Operations', abas: [{ id: 'pipeline', rotulo: 'Data pipeline' }, { id: 'performance', rotulo: 'Performance' }, { id: 'tickets', rotulo: 'O&M tickets' }, { id: 'alertas', rotulo: 'Alerts' }] },
+    { id: 'actuals', rotulo: 'Actuals', abas: [{ id: 'compensacao', rotulo: 'Compensation' }, { id: 'banco', rotulo: 'Credit bank' }, { id: 'auditoria', rotulo: 'UC Audit' }, { id: 'geracao', rotulo: 'Generation (P50 × Inj)' }, { id: 'reconciliacao', rotulo: 'Forecast × Actual' }] },
+    { id: 'data', rotulo: 'Data centre', abas: [{ id: 'dados', rotulo: 'Data centre' }] },
+    { id: 'finance', rotulo: 'Finance', abas: [{ id: 'provisao', rotulo: 'Provisioning' }, { id: 'billing', rotulo: 'Billing to finance' }] },
+    { id: 'portal', rotulo: 'Customer portal', abas: [{ id: 'portal', rotulo: 'Client view' }, { id: 'desk', rotulo: 'Service desk' }, { id: 'clients', rotulo: 'Client 360' }, { id: 'sla', rotulo: 'Service levels' }] },
+  ];
+  const grupoAtivo = GRUPOS.find((g) => g.abas.some((a) => a.id === aba));
   const podeAdmin = useAuthStore((s) => s.can('users', 'read'));
   const userIdAuth = useAuthStore((s) => s.userId);
   const [novaUsina, setNovaUsina] = useState(false);
@@ -207,24 +224,25 @@ export default function App() {
         <div className="brand">
           <span className="brand-mark" />
           <div>
-            <h1>Revenue Module</h1>
-            <p>Portfolio revenue forecast · Asset</p>
+            <h1>Solar Asset Platform</h1>
+            <p>Forecast, operations, reconciliation and revenue</p>
           </div>
         </div>
-        <span className="tag">prototype · Forecast 6+6 data</span>
+        <span className="tag">demo · invented data</span>
       </header>
 
-      <nav className="tabs">
-        <button className={aba === 'receita' ? 'tab on' : 'tab'} onClick={() => setAba('receita')}>Revenue</button>
-        <button className={aba === 'pvsyst' ? 'tab on' : 'tab'} onClick={() => setAba('pvsyst')}>Generation (PVsyst)</button>
-        <button className={aba === 'tarifas' ? 'tab on' : 'tab'} onClick={() => setAba('tarifas')}>Tariffs & Adjustments</button>
-        <button className={aba === 'metodos' ? 'tab on' : 'tab'} onClick={() => setAba('metodos')}>Methods by client</button>
-        <button className={aba === 'alertas' ? 'tab on' : 'tab'} onClick={() => setAba('alertas')}>Alerts</button>
-        <button className={aba === 'compensacao' ? 'tab on' : 'tab'} onClick={() => setAba('compensacao')}>Compensation (MeterHub)</button>
-        <button className={aba === 'auditoria' ? 'tab on' : 'tab'} onClick={() => setAba('auditoria')}>UC Audit</button>
-        <button className={aba === 'reconciliacao' ? 'tab on' : 'tab'} onClick={() => setAba('reconciliacao')}>Forecast × Actual</button>
-        <button className={aba === 'geracao' ? 'tab on' : 'tab'} onClick={() => setAba('geracao')}>Generation (P50 × Inj)</button>
+      <nav className="tabs-grupos" aria-label="Sections">
+        {GRUPOS.map((g) => (
+          <button key={g.id} className={`tab-grupo${grupoAtivo?.id === g.id ? ' on' : ''}`} onClick={() => setAba(g.abas[0].id)}>{g.rotulo}</button>
+        ))}
       </nav>
+      {grupoAtivo && grupoAtivo.abas.length > 1 && (
+        <nav className="tabs" aria-label="Pages">
+          {grupoAtivo.abas.map((a) => (
+            <button key={a.id} className={aba === a.id ? 'tab on' : 'tab'} onClick={() => setAba(a.id)}>{a.rotulo}</button>
+          ))}
+        </nav>
+      )}
 
       {loading && <div className="state">Loading portfolio…</div>}
       {error && <div className="state err">Error: {error}</div>}
@@ -232,6 +250,20 @@ export default function App() {
       {!loading && !error && aba === 'pvsyst' && <PVsystTable />}
       {!loading && !error && aba === 'tarifas' && <TarifasTable />}
       {aba === 'metodos' && <MetodosPanel />}
+      {aba === 'overview' && <ReadinessPanel go={(t) => setAba(t as Aba)} />}
+      {aba === 'evolucao' && <EvolutionPanel />}
+      {aba === 'register' && <RegisterPanel />}
+      {aba === 'pipeline' && <PipelinePanel />}
+      {aba === 'performance' && <PerformancePanel />}
+      {aba === 'tickets' && <TicketsPanel />}
+      {aba === 'banco' && <CreditBankPanel />}
+      {aba === 'provisao' && <ProvisionPanel />}
+      {aba === 'billing' && <BillingFinancePanel />}
+      {aba === 'portal' && <ClientPortalPanel />}
+      {aba === 'desk' && <ServiceDeskPanel />}
+      {aba === 'clients' && <Client360Panel go={(t) => setAba(t as Aba)} />}
+      {aba === 'sla' && <ServiceLevelsPanel />}
+      {aba === 'dados' && <DataCentrePanel go={(t) => setAba(t as Aba)} />}
       {aba === 'admin' && <AdminPanel />}
       {!loading && !error && aba === 'alertas' && <AlertasPanel />}
       {aba === 'compensacao' && (
@@ -259,7 +291,7 @@ export default function App() {
           </section>
 
           <div className="data-stamp" title="Provenance of the data on this tab. Update in src/lib/dataInfo.ts when refreshing.">
-            📅 <b>Forecast 6+6</b> · {carimboForecast()} &nbsp;·&nbsp; compensation from Excel assumption (real metering on the Compensation tab)
+            📅 <b>Forecast 9+3</b> · {carimboForecast()} &nbsp;·&nbsp; compensation from Excel assumption (real metering on the Compensation tab)
           </div>
 
           <div className="toolbar">
@@ -392,7 +424,7 @@ export default function App() {
                     <ColHint
                       label={<>Match Excel <span aria-hidden>🔎</span></>}
                       titulo="Match Excel"
-                      oque={<>Engine revenue ÷ <b>official Forecast</b> revenue (the 6+6 Excel). <b>100% = the platform reproduces the Excel exactly.</b></>}
+                      oque={<>Engine revenue ÷ <b>official Forecast</b> revenue (the 9+3 Excel). <b>100% = the platform reproduces the Excel exactly.</b></>}
                       comoLer={<>The tag beside it says why when it diverges (<i>Excel adjustment</i>, <i>fixed base</i>, <i>≈ ok</i>, <i>no forecast</i>). Click the cell to open the divergence detail.</>}
                     />
                   </th>

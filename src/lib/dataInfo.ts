@@ -6,19 +6,19 @@ import { fmtMes } from './date';
 
 export const DATA_INFO = {
   forecast: {
-    fonte: 'Forecast 6+6',
+    fonte: 'Forecast 9+3',
     horizonteIni: '2026-01',
     horizonteFim: '2026-12',
   },
   MeterHub: {
     /** início do histórico puxado da API (12 meses). */
-    historicoDesde: '2025-07',
+    historicoDesde: '2025-10',
     /** último mês com leitura FECHADA (fatura emitida + escaneada). */
-    fechadoAte: '2026-05',
+    fechadoAte: '2026-09',
     /** mês ainda em fechamento — dados parciais, não confiar no total. */
-    parcial: '2026-06',
+    parcial: '2026-10',
     /** data aproximada do snapshot da API. */
-    snapshot: '2026-07',
+    snapshot: '2026-10',
   },
 } as const;
 

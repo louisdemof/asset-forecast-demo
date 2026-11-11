@@ -10,7 +10,7 @@ const FILES = [
   'Performance_O&M.csv', 'Regras.csv', 'Tarifas.csv', 'Tarifas_ref.csv',
   'comp_portfolio.json',
   'injecao_excel.json', 'perfcomp_exemplo.json', 'perfcomp_ucs.json',
-  'perfcomp_usinas.json', 'rateio_score.json',
+  'perfcomp_usinas.json', 'rateio_score.json', 'demo_extras.json',
 ];
 
 /** Carrega os dados (texto plano) para a memória. Resolve quando tudo chegou. */
@@ -31,3 +31,16 @@ export function secureText(name: string): string {
   if (v == null) throw new Error(`arquivo não encontrado: ${name}`);
   return v;
 }
+
+/* Files loaded in the Data centre replace a data file in memory only (nothing leaves the browser).
+ * Screens that read the file again pick up the new version; a reload restores the shipped data. */
+let VERSION = 0;
+const listeners = new Set<() => void>();
+export function replaceText(name: string, text: string): void {
+  if (!STORE) throw new Error('dados ainda não carregados');
+  STORE[name] = text;
+  VERSION++;
+  listeners.forEach((l) => l());
+}
+export const dataVersion = (): number => VERSION;
+export const subscribeData = (l: () => void): (() => void) => { listeners.add(l); return () => { listeners.delete(l); }; };

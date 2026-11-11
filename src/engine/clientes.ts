@@ -55,8 +55,8 @@ export function precificacaoDe(regra: RegraCliente): Precificacao {
   return regra.grossUp === 'plano' || regra.grossUp === 'fixo' ? 'ppa' : 'desconto';
 }
 
-// PETRAX: preço fixo negociado — R$ 420.000,00 na energia de referência 720 MWh.
-const TAXA_ULTRA = 420000 / 720; // ≈ R$ 582,70/MWh
+// PETRAX: fictional fixed price used by the demo.
+const TAXA_FIXA = 390000 / 700;
 
 export const REGRAS_CLIENTE: Record<ClienteTipo, RegraCliente> = {
   NEXUS: { grossUp: 'nenhum', residual: 'om', modelo: 'GC', descricaoBase: '(1−desc)·(TUSD+TE)' },
@@ -68,37 +68,37 @@ export const REGRAS_CLIENTE: Record<ClienteTipo, RegraCliente> = {
     grossUp: 'fixo',
     residual: 'om',
     modelo: 'GC',
-    nota: 'Calculation Base is a value PASTED into Excel (no formula) → uses the stored per-plant value. ⚠ confirm source with Asset.',
+    nota: 'Fixed contract value stored per plant.',
     descricaoBase: 'fixed contract value (pasted into Excel)',
   },
   HIDRUS: {
     grossUp: 'pis_icms_semdesc',
     residual: 'guardaChuva',
     modelo: 'AR',
-    nota: 'O&M fixed; Umbrella is residual. Base WITHOUT discount in Excel. ⚠ confirm with Asset (7% discount not applied to the base).',
+    nota: 'O&M fixed; Umbrella is residual. Base without discount.',
     descricaoBase: '(TUSD+TE)/(1−PIS)/(1−ICMS)  — no discount',
   },
   TELMO: {
     grossUp: 'pis',
     residual: 'guardaChuva',
     modelo: 'AR',
-    nota: 'O&M is a fixed line; Umbrella absorbs the residual. TELMO ≈84% of metered UCs.',
+    nota: 'O&M is a fixed line; Umbrella absorbs the residual.',
     descricaoBase: '(1−desc)·(TUSD+TE)/(1−PIS)',
   },
   PETRAX: {
     grossUp: 'plano',
     residual: 'om',
     modelo: 'GC',
-    taxaPlano: TAXA_ULTRA,
-    nota: 'Negotiated fixed price: R$ 420.000,00 @ 720 MWh reference. Independent of the ANEEL tariff.',
-    descricaoBase: `R$ ${TAXA_ULTRA.toFixed(2).replace('.', ',')}/MWh (fixed)`,
+    taxaPlano: TAXA_FIXA,
+    nota: 'Fixed price per MWh, independent of the published tariff.',
+    descricaoBase: `R$ ${TAXA_FIXA.toFixed(2).replace('.', ',')}/MWh (fixed)`,
   },
   OPERON: {
     grossUp: 'nenhum',
     residual: 'om',
     modelo: 'GC',
-    feeOperacaoMWh: 85, // SolarCo PAGA R$ 85/MWh compensado à OPERON pela operação da GC (Buriti)
-    nota: 'Shared generation operated by OPERON (Buriti): billed under COMPENSATION (not take-or-pay). Client keeps the normal discount AND SolarCo pays a R$ 85/MWh fee to OPERON (cost ≈ R$ 302k/year). Only operator in this model.',
+    feeOperacaoMWh: 60,
+    nota: 'Shared generation run by a third-party operator: billed on compensation, with an operating fee per MWh.',
     descricaoBase: '(1−desc)·(TUSD+TE)',
   },
   // PADRÃO cobre ALPHAEN, NOVASOL, MINCO, DISTRA, ENERVA, AGROVA — todos GC,

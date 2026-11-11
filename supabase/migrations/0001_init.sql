@@ -125,7 +125,7 @@ create table metodos_cliente (
   desconto_na_base boolean not null default true,     -- o desconto entra na base (1−desc)?
   take_or_pay      boolean,                           -- null = a confirmar
   cap_compensada   text,                              -- teto de compensação (a confirmar)
-  fee_mwh          numeric not null default 0,        -- fee de operador GC (SION = 85 R$/MWh)
+  fee_mwh          numeric not null default 0,        -- fee de operador GC (R$/MWh)
   reajuste_tipo    text not null default 'aneel',     -- 'aneel' | 'contratual'
   ativo            boolean not null default true,
   observacao       text,
